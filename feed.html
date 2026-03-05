@@ -3,127 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feed - YNS Taxi</title>
+    <title>YNS - Booking Feed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
-        .tab-btn.active { color: #007AFF; border-bottom: 3px solid #007AFF; }
-        .full-page { transform: translateY(100%); transition: transform 0.4s ease; position: fixed; inset: 0; background: white; z-index: 100; overflow-y: auto; }
+        .full-page { transform: translateY(100%); transition: 0.4s ease; position: fixed; inset: 0; background: white; z-index: 100; overflow-y: auto; }
         .full-page.active { transform: translateY(0); }
+        .countdown-badge { background: #FFF0E6; color: #FF6B00; padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 800; }
     </style>
 </head>
 <body class="pb-24">
 
-    <div class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b">
-        <div class="max-w-md mx-auto p-4 space-y-4">
-            <input id="searchInput" oninput="renderFeed()" placeholder="🔍 ရှာဖွေရန်..." class="w-full bg-gray-100 py-3 px-4 rounded-2xl outline-none text-sm">
-            <div class="flex justify-around">
-                <button onclick="switchFeed('carpool')" id="tabC" class="tab-btn active font-bold text-sm pb-2">🚗 လမ်းကြုံ</button>
-                <button onclick="switchFeed('fuel')" id="tabF" class="tab-btn text-gray-400 font-bold text-sm pb-2">⛽ ဆီဆိုင်</button>
-            </div>
-        </div>
+    <div class="bg-white sticky top-0 z-40 border-b p-4">
+        <h1 class="text-xl font-black">YNS Booking Feed</h1>
     </div>
 
     <div id="feedContainer" class="max-w-md mx-auto p-5 space-y-4"></div>
 
     <div id="detailPage" class="full-page">
-        <div class="max-w-md mx-auto relative pb-20">
-            <button onclick="closeDetail()" class="absolute top-6 left-6 z-10 w-10 h-10 bg-black/20 text-white rounded-full backdrop-blur-md"><i class="fa-solid fa-xmark"></i></button>
+        <div class="max-w-md mx-auto pb-20">
+            <button onclick="closeDetail()" class="absolute top-6 left-6 z-10 w-10 h-10 bg-black/20 text-white rounded-full"><i class="fa-solid fa-arrow-left"></i></button>
             <img id="detImg" class="w-full aspect-square object-cover">
+            
             <div class="p-8 space-y-6">
-                <div class="flex items-center gap-4">
-                    <img id="detUserImg" class="w-14 h-14 rounded-full border-2 border-blue-500">
-                    <div>
-                        <h2 id="detName" class="text-xl font-black"></h2>
-                        <p id="detCar" class="text-blue-600 font-bold text-xs"></p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <img id="detUserImg" class="w-12 h-12 rounded-full border">
+                        <div>
+                            <h2 id="detName" class="text-lg font-black"></h2>
+                            <p id="detCar" class="text-blue-600 font-bold text-xs"></p>
+                        </div>
                     </div>
+                    <div id="seatBadge" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold"></div>
                 </div>
-                <div id="detInfo" class="bg-gray-50 p-6 rounded-3xl text-sm leading-relaxed whitespace-pre-line"></div>
-                <div class="grid grid-cols-2 gap-4" id="contactArea">
-                    <a id="viber" class="bg-[#7360F2] text-white py-4 rounded-2xl font-bold text-center"><i class="fa-brands fa-viber"></i> Viber</a>
-                    <a id="tele" class="bg-[#24A1DE] text-white py-4 rounded-2xl font-bold text-center"><i class="fa-brands fa-telegram"></i> Telegram</a>
+
+                <div id="detInfo" class="bg-gray-50 p-5 rounded-3xl text-sm whitespace-pre-line leading-relaxed"></div>
+
+                <div id="driverView" class="hidden space-y-4">
+                    <p class="font-black text-gray-400 text-xs uppercase">လိုက်ပါရန် Request တောင်းထားသူများ</p>
+                    <div id="requestList" class="space-y-3"></div>
+                </div>
+
+                <div id="passengerView" class="hidden space-y-4">
+                    <p class="font-black text-gray-400 text-xs uppercase">လိုက်ပါရန် စာရင်းသွင်းပါ</p>
+                    <div id="paxCamUI" class="hidden bg-black rounded-3xl overflow-hidden aspect-video relative">
+                        <video id="paxVideo" class="w-full h-full object-cover" autoplay playsinline></video>
+                        <button onclick="takePaxPhoto()" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-12 h-12 bg-white rounded-full border-4 border-gray-300"></button>
+                    </div>
+                    <img id="paxPreview" class="hidden w-full rounded-3xl aspect-video object-cover">
+                    <button onclick="startPaxCamera()" class="w-full py-4 bg-gray-100 rounded-2xl font-bold text-sm">📸 Selfie ရိုက်ပြီးမှ Request လုပ်ပါ</button>
+                    <button id="reqBtn" onclick="sendRequest()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">လိုက်ပါရန် Request ပို့မည်</button>
+                </div>
+
+                <div class="p-4 border-t">
+                    <p class="text-[10px] font-bold text-gray-400">ဆက်သွယ်ရန်ဖုန်းနံပါတ်</p>
+                    <p id="detPhone" class="text-xl font-black text-blue-600 mt-1"></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center z-50">
-        <a href="index.html" class="text-gray-400 flex flex-col items-center"><i class="fa-solid fa-house"></i><span class="text-[10px]">Home</span></a>
-        <a href="post.html" class="text-gray-400 flex flex-col items-center"><i class="fa-solid fa-plus-circle"></i><span class="text-[10px]">Post</span></a>
-        <a href="feed.html" class="text-blue-600 flex flex-col items-center"><i class="fa-solid fa-rss"></i><span class="text-[10px]">Feed</span></a>
-    </nav>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, update, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        const firebaseConfig = {
+        // Firebase Config
+        const firebaseConfig = { 
             apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
             authDomain: "yns-taxi.firebaseapp.com",
             databaseURL: "https://yns-taxi-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "yns-taxi",
             appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        let currentType = 'carpool';
-        let posts = [];
+        const auth = getAuth(app);
+
+        let selectedPostId = null;
+        let selectedPostData = null;
+        let paxSelfie = null;
 
         onValue(ref(db, 'yns_posts'), s => {
-            posts = s.val() ? Object.entries(s.val()) : [];
-            renderFeed();
-        });
-
-        window.switchFeed = (t) => {
-            currentType = t;
-            document.getElementById('tabC').className = t==='carpool'?'tab-btn active font-bold text-sm pb-2':'tab-btn text-gray-400 font-bold text-sm pb-2';
-            document.getElementById('tabF').className = t==='fuel'?'tab-btn active font-bold text-sm pb-2':'tab-btn text-gray-400 font-bold text-sm pb-2';
-            renderFeed();
-        };
-
-        window.renderFeed = () => {
-            const search = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('feedContainer');
             container.innerHTML = "";
+            const data = s.val();
+            if(!data) return;
 
-            posts.sort((a,b)=>b[1].ts-a[1].ts).forEach(([id, p]) => {
-                if(p.category !== currentType) return;
-                const match = (p.from||p.station||"").toLowerCase().includes(search);
-                if(!match) return;
+            Object.entries(data).sort((a,b)=>b[1].ts-a[1].ts).forEach(([id, p]) => {
+                const timeLeft = p.expireAt - Date.now();
+                if(timeLeft <= 0) return; // အချိန်ကုန်ရင် မပြဘူး
 
+                const mins = Math.floor(timeLeft / 60000);
                 const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-3xl shadow-sm space-y-3";
-                card.onclick = () => {
-                    document.getElementById('detImg').src = p.selfieData;
-                    document.getElementById('detUserImg').src = p.userImg;
-                    document.getElementById('detName').innerText = p.userName;
-                    document.getElementById('detCar').innerText = "Car No: " + p.carNo;
-                    
-                    let info = p.category === 'carpool' 
-                        ? `📍 မှ: ${p.from}\n🏁 သို့: ${p.to}\n👥 လူဦးရေ: ${p.pax}\n📝 မှတ်ချက်: ${p.note}`
-                        : `⛽ ဆီဆိုင်: ${p.station}\n📊 အခြေအနေ: ${p.status}\n📝 မှတ်ချက်: ${p.note}`;
-                    
-                    document.getElementById('detInfo').innerText = info;
-                    document.getElementById('contactArea').classList.toggle('hidden', p.category === 'fuel');
-                    
-                    if(p.category === 'carpool'){
-                        const phone = p.phone.startsWith('0') ? '95' + p.phone.substring(1) : p.phone;
-                        document.getElementById('viber').href = `viber://chat?number=${phone}`;
-                        document.getElementById('tele').href = `https://t.me/+${phone}`;
-                    }
-
-                    document.getElementById('detailPage').classList.add('active');
-                };
-                card.innerHTML = `<div class="flex items-center gap-2"><img src="${p.userImg}" class="w-6 h-6 rounded-full"><p class="text-xs font-bold">${p.userName}</p></div>
-                                  <p class="text-sm font-bold text-gray-800">${p.from || p.station}</p>
-                                  <img src="${p.selfieData}" class="w-full aspect-video object-cover rounded-2xl">`;
+                card.className = "bg-white p-5 rounded-3xl shadow-sm space-y-3 relative";
+                card.onclick = () => openDetail(id, p);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-2">
+                            <img src="${p.userImg}" class="w-6 h-6 rounded-full">
+                            <p class="text-xs font-bold">${p.userName}</p>
+                        </div>
+                        <div class="countdown-badge"><i class="fa-regular fa-clock"></i> ${mins} mins left</div>
+                    </div>
+                    <div class="flex justify-between">
+                        <p class="text-sm font-black text-gray-800">${p.from || p.station} <i class="fa-solid fa-arrow-right text-[10px] mx-1"></i> ${p.to || ''}</p>
+                        <p class="text-xs font-bold text-blue-600">💺 ကျန်: ${p.availableSeats}</p>
+                    </div>
+                    <img src="${p.selfieData}" class="w-full aspect-video object-cover rounded-2xl">
+                `;
                 container.appendChild(card);
             });
+        });
+
+        window.openDetail = (id, post) => {
+            selectedPostId = id;
+            selectedPostData = post;
+            document.getElementById('detImg').src = post.selfieData;
+            document.getElementById('detUserImg').src = post.userImg;
+            document.getElementById('detName').innerText = post.userName;
+            document.getElementById('detCar').innerText = "Car: " + post.carNo;
+            document.getElementById('detPhone').innerText = post.phone;
+            document.getElementById('seatBadge').innerText = "Seat Available: " + post.availableSeats;
+            document.getElementById('detInfo').innerText = post.note;
+
+            const isDriver = post.uid === auth.currentUser.uid;
+            document.getElementById('driverView').classList.toggle('hidden', !isDriver);
+            document.getElementById('passengerView').classList.toggle('hidden', isDriver);
+
+            if(isDriver) loadRequests(id);
+            document.getElementById('detailPage').classList.add('active');
         };
 
-        window.closeDetail = () => document.getElementById('detailPage').classList.remove('active');
+        // --- Driver Side Logic ---
+        function loadRequests(postId) {
+            const list = document.getElementById('requestList');
+            list.innerHTML = "<p class='text-xs text-gray-400'>ရှာနေပါသည်...</p>";
+            onValue(ref(db, `yns_requests/${postId}`), s => {
+                list.innerHTML = "";
+                if(!s.exists()) return list.innerHTML = "<p class='text-xs text-gray-400'>Request မရှိသေးပါ</p>";
+                Object.entries(s.val()).forEach(([reqId, r]) => {
+                    const item = document.createElement('div');
+                    item.className = "bg-white border p-4 rounded-2xl flex items-center justify-between";
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3" onclick="alert('Passenger: ${r.name}')">
+                            <img src="${r.selfie}" class="w-10 h-10 rounded-full object-cover border">
+                            <div><p class="text-xs font-bold">${r.name}</p><p class="text-[10px] ${r.status==='accepted'?'text-green-500':'text-orange-500'} font-black uppercase">${r.status}</p></div>
+                        </div>
+                        <div class="flex gap-2">
+                            ${r.status === 'pending' ? `
+                                <button onclick="handleRequest('${reqId}', 'accepted')" class="bg-green-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">Accept</button>
+                                <button onclick="handleRequest('${reqId}', 'rejected')" class="bg-red-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">Reject</button>
+                            ` : `<p class='text-[10px] font-bold'>Done</p>`}
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        window.handleRequest = async (reqId, status) => {
+            if(status === 'accepted') {
+                if(selectedPostData.availableSeats <= 0) return alert("Seat မရှိတော့ပါ");
+                // Seat လျှော့မည်
+                await update(ref(db, `yns_posts/${selectedPostId}`), {
+                    availableSeats: selectedPostData.availableSeats - 1
+                });
+            }
+            await update(ref(db, `yns_requests/${selectedPostId}/${reqId}`), { status: status });
+            alert("Updated!");
+        };
+
+        // --- Passenger Side Logic ---
+        window.startPaxCamera = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            document.getElementById('paxVideo').srcObject = stream;
+            document.getElementById('paxCamUI').classList.remove('hidden');
+        };
+
+        window.takePaxPhoto = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 300; canvas.height = 300;
+            canvas.getContext('2d').drawImage(document.getElementById('paxVideo'), 0,0,300,300);
+            paxSelfie = canvas.toDataURL('image/jpeg', 0.5);
+            document.getElementById('paxPreview').src = paxSelfie;
+            document.getElementById('paxPreview').classList.remove('hidden');
+            document.getElementById('paxCamUI').classList.add('hidden');
+            document.getElementById('paxVideo').srcObject.getTracks().forEach(t=>t.stop());
+        };
+
+        window.sendRequest = async () => {
+            if(!paxSelfie) return alert("Selfie ရိုက်ပါ");
+            await push(ref(db, `yns_requests/${selectedPostId}`), {
+                uid: auth.currentUser.uid,
+                name: auth.currentUser.displayName,
+                selfie: paxSelfie,
+                status: 'pending',
+                ts: Date.now()
+            });
+            alert("Request ပို့ပြီးပါပြီ။ Driver လက်ခံသည်အထိ စောင့်ပါ။");
+            closeDetail();
+        };
+
+        window.closeDetail = () => {
+            document.getElementById('detailPage').classList.remove('active');
+            paxSelfie = null;
+        };
     </script>
 </body>
 </html>
