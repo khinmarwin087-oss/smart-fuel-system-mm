@@ -3,39 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNS Home</title>
+    <title>YNS Home - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
         .apple-card { background: white; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="pb-24">
-    <div class="max-w-md mx-auto p-6 space-y-6">
-        <h1 class="text-3xl font-black tracking-tight mt-4">Home</h1>
-        
+
+    <div id="loginScreen" class="flex flex-col items-center justify-center min-h-screen p-6 text-center">
+        <div class="mb-8">
+            <h1 class="text-4xl font-black text-blue-600 mb-2">YNS Taxi</h1>
+            <p class="text-gray-500 font-medium">Smart Fuel & Community Pass</p>
+        </div>
+        <button id="googleBtn" class="flex items-center gap-4 bg-white px-8 py-4 rounded-2xl shadow-lg font-bold text-gray-700 hover:bg-gray-50 active:scale-95 transition-all w-full max-w-xs justify-center border border-gray-100">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20">
+            Google ဖြင့် အကောင့်ဝင်ရန်
+        </button>
+    </div>
+
+    <div id="mainContent" class="hidden max-w-md mx-auto p-6 space-y-6">
+        <header class="flex justify-between items-center mt-4">
+            <h1 class="text-3xl font-black tracking-tight">Home</h1>
+            <button onclick="logout()" class="text-xs font-bold text-red-500">ထွက်ရန်</button>
+        </header>
+
         <div class="apple-card p-6 text-center space-y-4">
+            <div id="userProfile" class="mb-4">
+                <img id="userImg" src="" class="w-16 h-16 rounded-full mx-auto border-2 border-blue-500 mb-2">
+                <p id="userName" class="text-sm font-bold text-gray-800"></p>
+            </div>
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sone Ma Checker</p>
             <input id="carNo" placeholder="ကားနံပါတ် (ဥပမာ- 4)" class="w-full p-4 bg-gray-100 rounded-2xl text-center text-2xl font-black outline-none border-2 border-transparent focus:border-blue-500 transition">
             <button onclick="checkDrive()" class="w-full bg-[#007AFF] text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition">စစ်ဆေးမည်</button>
             
             <div id="qrArea" class="hidden pt-6 border-t mt-4">
                 <div id="qrcode" class="inline-block p-3 bg-white border-2 border-gray-100 rounded-xl"></div>
-                <p class="text-xs font-bold text-blue-600 mt-2">DIGITAL FUEL PASS</p>
+                <p class="text-xs font-bold text-blue-600 mt-2 uppercase">Digital Fuel Pass</p>
             </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center px-6">
+    <nav id="navBar" class="hidden fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center px-6">
         <a href="index.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
         <a href="post.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
         <a href="feed.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
     </nav>
 
-    <script>
-        function checkDrive() {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
+            authDomain: "yns-taxi.firebaseapp.com",
+            databaseURL: "https://yns-taxi-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "yns-taxi",
+            storageBucket: "yns-taxi.firebasestorage.app",
+            messagingSenderId: "390164927701",
+            appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Login Function
+        document.getElementById('googleBtn').onclick = () => {
+            signInWithPopup(auth, provider).catch(err => alert("Login မှားယွင်းနေပါသည်: " + err.message));
+        };
+
+        // Logout Function
+        window.logout = () => signOut(auth);
+
+        // Auth State Observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('navBar').classList.remove('hidden');
+                document.getElementById('userName').innerText = user.displayName;
+                document.getElementById('userImg').src = user.photoURL;
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('navBar').classList.add('hidden');
+            }
+        });
+
+        // Checker Logic
+        window.checkDrive = () => {
             const no = document.getElementById('carNo').value;
             if(!no) return alert("နံပါတ်ထည့်ပါ");
             const isEvenDay = new Date().getDate() % 2 === 0;
@@ -45,13 +106,12 @@
                 alert("✅ မောင်းနှင်ခွင့် ရှိပါသည်။");
                 document.getElementById('qrArea').classList.remove('hidden');
                 document.getElementById('qrcode').innerHTML = "";
-                new QRCode(document.getElementById("qrcode"), { text: "YNS-"+no, width: 140, height: 140 });
+                new QRCode(document.getElementById("qrcode"), { text: "YNS-UID-"+auth.currentUser.uid+"-CAR-"+no, width: 140, height: 140 });
             } else {
                 alert("❌ ယနေ့ မောင်းနှင်ခွင့် မရှိပါ။");
                 document.getElementById('qrArea').classList.add('hidden');
             }
-        }
+        };
     </script>
 </body>
 </html>
-
