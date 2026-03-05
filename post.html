@@ -3,64 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post</title>
+    <title>YNS Secure Post</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
             authDomain: "yns-taxi.firebaseapp.com",
             databaseURL: "https://yns-taxi-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "yns-taxi",
-            storageBucket: "yns-taxi.firebasestorage.app",
-            messagingSenderId: "390164927701",
             appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
         };
+
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getDatabase(app);
 
-        window.sendPost = (category) => {
-            const content = category === 'fuel' ? document.getElementById('fText').value : document.getElementById('cText').value;
-            if(!content) return alert("စာသားရေးပါ");
+        let userCarNo = "N/A";
+        let capturedImg = null;
 
-            push(ref(db, 'yns_posts'), {
-                content,
-                category,
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) window.location.href = "index.html";
+            const snapshot = await get(child(ref(db), `users/${user.uid}`));
+            if (snapshot.exists()) userCarNo = snapshot.val().carNo;
+        });
+
+        window.startCamera = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            document.getElementById('video').srcObject = stream;
+            document.getElementById('video').play();
+            document.getElementById('camUI').classList.remove('hidden');
+        };
+
+        window.takePhoto = () => {
+            const canvas = document.createElement('canvas');
+            const video = document.getElementById('video');
+            canvas.width = 300; // Storage သက်သာအောင် size လျှော့သိမ်းမည်
+            canvas.height = 300;
+            canvas.getContext('2d').drawImage(video, 0, 0, 300, 300);
+            capturedImg = canvas.toDataURL('image/jpeg', 0.5); // Quality လျှော့ချပြီး size သက်သာစေရန်
+            document.getElementById('previewImg').src = capturedImg;
+            document.getElementById('previewImg').classList.remove('hidden');
+            document.getElementById('camUI').classList.add('hidden');
+            video.srcObject.getTracks().forEach(t => t.stop());
+        };
+
+        window.sendPost = async (category) => {
+            const content = document.getElementById('postContent').value;
+            const expireTime = document.getElementById('expireTime').value;
+            if(!content || !expireTime || !capturedImg) return alert("အချက်အလက်စုံလင်စွာဖြည့်ပါ (Selfie အပါအဝင်)");
+
+            const expireTimestamp = new Date(expireTime).getTime();
+            if(expireTimestamp <= Date.now()) return alert("ကုန်ဆုံးချိန်သည် အနာဂတ်အချိန်ဖြစ်ရပါမည်");
+
+            await push(ref(db, 'yns_posts'), {
+                content, category,
+                userName: auth.currentUser.displayName,
+                userImg: auth.currentUser.photoURL,
+                carNo: userCarNo,
+                selfieData: capturedImg, // Base64 String ဖြင့် Database တွင်တိုက်ရိုက်သိမ်းသည်
+                expireAt: expireTimestamp, // Countdown အတွက်
                 time: new Date().toLocaleString(),
                 ts: Date.now()
-            }).then(() => {
-                alert("တင်ပြီးပါပြီ");
-                window.location.href = "feed.html";
             });
+
+            alert("Post တင်ပြီးပါပြီ");
+            window.location.href = "feed.html";
         };
     </script>
-    <style>body { background: #F2F2F7; font-family: -apple-system, sans-serif; }</style>
 </head>
-<body class="pb-24">
+<body class="bg-[#F2F2F7] pb-24">
     <div class="max-w-md mx-auto p-6 space-y-6">
-        <h1 class="text-3xl font-black mt-4">Create</h1>
-        
-        <div class="bg-white p-5 rounded-[24px] shadow-sm border border-white space-y-3">
-            <h3 class="font-bold text-blue-600 flex items-center gap-2"><i class="fa-solid fa-gas-pump"></i> ဆီဆိုင်သတင်း</h3>
-            <textarea id="fText" placeholder="ဘယ်ဆိုင်မှာ ဆီရှိလဲ..." class="w-full p-4 bg-gray-50 rounded-2xl text-sm outline-none h-24 focus:ring-2 focus:ring-blue-500 transition"></textarea>
-            <button onclick="sendPost('fuel')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Update တင်မည်</button>
-        </div>
+        <h1 class="text-3xl font-black mt-4">Security Post</h1>
+        <div class="bg-white p-6 rounded-[28px] shadow-sm space-y-4 border border-white">
+            <textarea id="postContent" placeholder="အသေးစိတ်ရေးပါ..." class="w-full p-4 bg-gray-50 rounded-2xl h-24 outline-none"></textarea>
+            
+            <div class="space-y-2">
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Post ပြသမည့် နောက်ဆုံးအချိန်</p>
+                <input type="datetime-local" id="expireTime" class="w-full p-3 bg-gray-50 rounded-xl outline-none text-sm">
+            </div>
 
-        <div class="bg-white p-5 rounded-[24px] shadow-sm border border-white space-y-3">
-            <h3 class="font-bold text-green-600 flex items-center gap-2"><i class="fa-solid fa-car"></i> လမ်းကြုံ / Carpool</h3>
-            <textarea id="cText" placeholder="ဘယ်ကနေ ဘယ်ကိုလဲ..." class="w-full p-4 bg-gray-50 rounded-2xl text-sm outline-none h-24 focus:ring-2 focus:ring-green-500 transition"></textarea>
-            <button onclick="sendPost('carpool')" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Carpool တင်မည်</button>
+            <div id="camUI" class="hidden rounded-2xl overflow-hidden bg-black aspect-square relative">
+                <video id="video" class="w-full h-full object-cover"></video>
+                <button onclick="takePhoto()" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-14 h-14 bg-white rounded-full border-4 border-gray-300"></button>
+            </div>
+            <img id="previewImg" class="hidden w-full rounded-2xl aspect-square object-cover shadow-inner">
+
+            <button onclick="startCamera()" class="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-sm"><i class="fa-solid fa-camera mr-2"></i>Selfie ရိုက်ရန်</button>
+            <div class="flex gap-2">
+                <button onclick="sendPost('fuel')" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold">ဆီဆိုင်</button>
+                <button onclick="sendPost('carpool')" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold">လမ်းကြုံ</button>
+            </div>
         </div>
     </div>
-
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-6">
-        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
-        <a href="post.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
-        <a href="feed.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
-    </nav>
-</body>
+    </body>
 </html>
-
