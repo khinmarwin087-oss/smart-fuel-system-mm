@@ -3,40 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post News</title>
+    <title>YNS Secure Post</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
-        .apple-card { background: white; border-radius: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        body { background: #F2F2F7; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .apple-card { background: white; border-radius: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .input-box { background: #F9F9F9; border-radius: 14px; border: 1px solid #E5E5E5; padding: 12px 16px; width: 100%; outline: none; transition: 0.3s; }
+        .input-box:focus { border-color: #007AFF; background: white; }
+        
+        /* Custom Toast Animation */
+        #toast { visibility: hidden; min-width: 250px; background-color: rgba(0,0,0,0.8); color: #fff; text-align: center; border-radius: 20px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 100px; transform: translateX(-50%); backdrop-filter: blur(10px); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
+
+    <div id="toast">Message here</div>
+
     <div class="max-w-md mx-auto p-6 space-y-6">
-        <h1 class="text-3xl font-black mt-4">Post</h1>
+        <header class="pt-4">
+            <h1 class="text-3xl font-black tracking-tight text-gray-900">Post Details</h1>
+            <p class="text-xs font-bold text-gray-400 uppercase mt-1">သေချာစွာ ဖြည့်စွက်ပေးပါ</p>
+        </header>
+
         <div class="apple-card p-6 space-y-4">
-            <textarea id="postContent" placeholder="သတင်းအသေးစိတ်ရေးပါ..." class="w-full p-4 bg-gray-50 rounded-2xl h-24 outline-none"></textarea>
-            
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">From</label>
+                    <input id="fromPlace" placeholder="အစ (ဥပမာ- လှိုင်)" class="input-box text-sm">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">To</label>
+                    <input id="toPlace" placeholder="အဆုံး (ဥပမာ- ရန်ကင်း)" class="input-box text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">Passenger Limit</label>
+                    <select id="paxLimit" class="input-box text-sm appearance-none">
+                        <option value="1">၁ ယောက်</option>
+                        <option value="2">၂ ယောက်</option>
+                        <option value="3">၃ ယောက်</option>
+                        <option value="4">၄ ယောက်</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">Expire Time</label>
+                    <input type="datetime-local" id="expireTime" class="input-box text-xs">
+                </div>
+            </div>
+
             <div class="space-y-1">
-                <p class="text-[10px] font-bold text-gray-400 uppercase">ပြသမည့်အချိန်ကုန်ဆုံးချိန်</p>
-                <input type="datetime-local" id="expireTime" class="w-full p-3 bg-gray-50 rounded-xl outline-none text-sm">
+                <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">Note / Description</label>
+                <textarea id="postNote" placeholder="ထပ်တိုးအချက်အလက်များ..." class="input-box text-sm h-20 resize-none"></textarea>
             </div>
 
-            <div id="camUI" class="hidden rounded-2xl overflow-hidden bg-black aspect-square relative">
+            <div id="camUI" class="hidden rounded-3xl overflow-hidden bg-black aspect-square relative shadow-inner">
                 <video id="video" class="w-full h-full object-cover" autoplay playsinline></video>
-                <button onclick="takePhoto()" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-14 h-14 bg-white rounded-full border-4 border-gray-300"></button>
+                <button onclick="takePhoto()" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white/20 backdrop-blur-md rounded-full border-4 border-white shadow-xl"></button>
             </div>
-            <img id="previewImg" class="hidden w-full rounded-2xl aspect-square object-cover shadow-inner border">
+            <img id="previewImg" class="hidden w-full rounded-3xl aspect-square object-cover shadow-md border-4 border-white">
 
-            <button onclick="startCamera()" class="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-sm"><i class="fa-solid fa-camera mr-2"></i>Selfie ရိုက်ရန်</button>
-            <div class="flex gap-2">
-                <button id="sendBtn" onclick="sendPost('fuel')" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold">ဆီဆိုင်</button>
-                <button onclick="sendPost('carpool')" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold">လမ်းကြုံ</button>
+            <button onclick="startCamera()" class="w-full py-4 bg-gray-100 text-gray-800 rounded-2xl font-bold text-sm transition active:scale-95">
+                <i class="fa-solid fa-camera mr-2"></i> Selfie Verification ရိုက်ပါ
+            </button>
+
+            <div class="flex gap-3 pt-2">
+                <button id="sendBtnFuel" onclick="sendPost('fuel')" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition">ဆီဆိုင်တင်မည်</button>
+                <button id="sendBtnCarpool" onclick="sendPost('carpool')" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-200 active:scale-95 transition">လမ်းကြုံတင်မည်</button>
             </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-6 z-50">
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center px-6 z-50">
         <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
         <a href="post.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
         <a href="feed.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
@@ -62,6 +105,14 @@
         let userCarNo = "N/A";
         let capturedImg = null;
 
+        // Custom Toast Function
+        window.showToast = (msg) => {
+            const x = document.getElementById("toast");
+            x.innerText = msg;
+            x.className = "show";
+            setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
+        };
+
         onAuthStateChanged(auth, async (u) => {
             if (!u) window.location.href = "index.html";
             const s = await get(child(ref(db), `users/${u.uid}`));
@@ -69,9 +120,11 @@
         });
 
         window.startCamera = async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            document.getElementById('video').srcObject = stream;
-            document.getElementById('camUI').classList.remove('hidden');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('video').srcObject = stream;
+                document.getElementById('camUI').classList.remove('hidden');
+            } catch(e) { showToast("Camera ဖွင့်၍မရပါ"); }
         };
 
         window.takePhoto = () => {
@@ -87,13 +140,24 @@
         };
 
         window.sendPost = async (cat) => {
-            const content = document.getElementById('postContent').value;
+            const from = document.getElementById('fromPlace').value;
+            const to = document.getElementById('toPlace').value;
+            const pax = document.getElementById('paxLimit').value;
+            const note = document.getElementById('postNote').value;
             const ex = document.getElementById('expireTime').value;
-            if(!content || !ex || !capturedImg) return alert("အချက်အလက်ဖြည့်ပါ");
 
-            document.getElementById('sendBtn').disabled = true;
+            if(!from || !to || !ex || !capturedImg) return showToast("⚠️ အချက်အလက်စုံလင်စွာ ဖြည့်ပါ");
+
+            document.getElementById('sendBtnFuel').disabled = true;
+            document.getElementById('sendBtnCarpool').disabled = true;
+            
+            showToast("⏳ တင်နေပါသည်...");
+
+            const fullContent = `📍 မှ: ${from} \n🏁 သို့: ${to} \n👥 လူဦးရေ: ${pax} ယောက် \n📝 မှတ်ချက်: ${note}`;
+
             await push(ref(db, 'yns_posts'), {
-                content, category: cat,
+                content: fullContent,
+                category: cat,
                 userName: auth.currentUser.displayName,
                 userImg: auth.currentUser.photoURL,
                 carNo: userCarNo,
@@ -102,7 +166,9 @@
                 time: new Date().toLocaleString(),
                 ts: Date.now()
             });
-            window.location.href = "feed.html";
+
+            showToast("✅ အောင်မြင်စွာ တင်ပြီးပါပြီ");
+            setTimeout(() => { window.location.href = "feed.html"; }, 1500);
         };
     </script>
 </body>
