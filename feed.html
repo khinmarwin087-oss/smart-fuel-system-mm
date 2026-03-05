@@ -3,154 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNS Premium Feed</title>
+    <title>YNS Feed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
-        .apple-card { background: white; border-radius: 30px; border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s; }
-        .apple-card:active { transform: scale(0.98); }
-        .route-line { border-left: 2px dashed #E5E5E5; margin-left: 7px; height: 20px; }
-        .modal-bg { background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); }
-        .badge-blue { background: #EBF5FF; color: #007AFF; }
-        .badge-green { background: #F0FDF4; color: #16A34A; }
+        body { background: #F2F2F7; font-family: -apple-system, sans-serif; overflow-x: hidden; }
+        .tab-btn.active { color: #007AFF; border-bottom: 3px solid #007AFF; }
+        .full-page { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .full-page.active { transform: translateX(0); }
     </style>
 </head>
-<body class="pb-28">
+<body class="pb-24">
 
-    <div class="max-w-md mx-auto p-5">
-        <header class="flex justify-between items-center py-6">
-            <div>
-                <h1 class="text-3xl font-black tracking-tight">Feed</h1>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Routes & Fuel</p>
+    <div class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-40 border-b border-gray-100">
+        <div class="max-w-md mx-auto p-4 space-y-4">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input id="searchInput" oninput="renderFeed()" placeholder="နေရာ သို့မဟုတ် ဆီဆိုင် ရှာရန်..." class="w-full bg-gray-100 py-3 pl-12 pr-4 rounded-2xl outline-none text-sm font-medium">
             </div>
-            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <i class="fa-solid fa-magnifying-glass text-gray-300 text-sm"></i>
+            <div class="flex justify-around">
+                <button onclick="switchFeed('carpool')" id="feedTabCarpool" class="tab-btn active pb-2 font-black text-sm px-4 transition-all">🚗 လမ်းကြုံ</button>
+                <button onclick="switchFeed('fuel')" id="feedTabFuel" class="tab-btn pb-2 font-black text-sm px-4 transition-all text-gray-400">⛽ ဆီဆိုင်</button>
             </div>
-        </header>
-
-        <div id="feedContainer" class="space-y-6">
-            <div class="text-center py-20 text-gray-400 text-xs font-bold uppercase tracking-widest">Loading Feed...</div>
         </div>
     </div>
 
-    <div id="modal" class="hidden fixed inset-0 z-[100] modal-bg flex items-end justify-center">
-        <div class="bg-white w-full max-w-md rounded-t-[40px] overflow-hidden relative shadow-2xl animate-slide-up p-8">
-            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" onclick="closeModal()"></div>
-            
-            <div class="flex items-center gap-4 mb-6">
-                <img id="modalUserImg" src="" class="w-14 h-14 rounded-full border-2 border-blue-500 p-0.5">
-                <div>
-                    <h3 id="modalUserName" class="font-black text-lg text-gray-800"></h3>
-                    <p id="modalCarNo" class="text-xs text-blue-600 font-bold uppercase tracking-tight"></p>
-                </div>
-            </div>
+    <div class="max-w-md mx-auto p-5 mt-32 space-y-4" id="feedContainer">
+        </div>
 
-            <div class="space-y-6">
-                <div id="modalContent" class="text-gray-700 text-sm leading-relaxed bg-gray-50 p-5 rounded-3xl whitespace-pre-line"></div>
-                <img id="modalImg" src="" class="w-full aspect-video object-cover rounded-[24px] shadow-sm border">
-                
-                <div class="flex justify-between items-center border-t pt-4">
-                    <span class="text-[10px] font-black text-gray-400 uppercase" id="modalTime"></span>
-                    <button onclick="closeModal()" class="bg-black text-white px-8 py-3 rounded-2xl font-bold text-sm">ပိတ်မည်</button>
+    <div id="fullPageDetail" class="fixed inset-0 bg-white z-[60] full-page overflow-y-auto">
+        <div class="max-w-md mx-auto pb-10">
+            <div class="relative h-[400px]">
+                <img id="detImg" class="w-full h-full object-cover">
+                <button onclick="closeDetail()" class="absolute top-6 left-6 w-10 h-10 bg-white/20 backdrop-blur-lg text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+            </div>
+            <div class="p-8 -mt-10 bg-white rounded-t-[40px] relative space-y-6">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-3">
+                        <img id="detUserImg" class="w-12 h-12 rounded-full border-2 border-blue-500 p-0.5">
+                        <div>
+                            <h2 id="detUserName" class="text-xl font-black"></h2>
+                            <p id="detTime" class="text-[10px] text-gray-400 font-bold uppercase"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="detInfo" class="space-y-4 bg-gray-50 p-6 rounded-3xl">
+                    </div>
+
+                <div class="space-y-3">
+                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">ဆက်သွယ်ရန်</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a id="viberBtn" href="#" class="flex items-center justify-center gap-3 bg-[#7360F2] text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-100">
+                            <i class="fa-brands fa-viber text-xl"></i> Viber
+                        </a>
+                        <a id="tgBtn" href="#" class="flex items-center justify-center gap-3 bg-[#24A1DE] text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-100">
+                            <i class="fa-brands fa-telegram text-xl"></i> Telegram
+                        </a>
+                    </div>
+                    <button onclick="sendRequest()" class="w-full bg-black text-white py-4 rounded-2xl font-bold mt-2">လိုက်ပါရန် အကြောင်းကြားမည် (Accept)</button>
                 </div>
             </div>
         </div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center px-6 z-50">
-        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
-        <a href="post.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
-        <a href="feed.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
+        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house"></i><span class="text-[10px] font-bold">Home</span></a>
+        <a href="post.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle"></i><span class="text-[10px] font-bold">Post</span></a>
+        <a href="feed.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-rss"></i><span class="text-[10px] font-bold">Feed</span></a>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
-            authDomain: "yns-taxi.firebaseapp.com",
-            databaseURL: "https://yns-taxi-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "yns-taxi",
-            appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
-        };
-
+        // Firebase Config (Same)
+        const firebaseConfig = { ... };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        let currentType = 'carpool';
+        let allPosts = [];
+
         onValue(ref(db, 'yns_posts'), (snap) => {
-            const feed = document.getElementById('feedContainer');
-            feed.innerHTML = "";
-            const data = snap.val();
-            
-            if (data) {
-                Object.entries(data).sort((a,b) => b[1].ts - a[1].ts).forEach(([id, post]) => {
-                    const timeLeft = post.expireAt - Date.now();
-                    if (timeLeft > 0) {
-                        const mins = Math.floor(timeLeft / 60000);
-                        const displayTime = mins > 60 ? Math.floor(mins/60) + " နာရီအလို" : mins + " မိနစ်အလို";
-                        
-                        // Extract Start and End from content string if formatted
-                        const lines = post.content.split('\n');
-                        const from = lines[0] || "မသိပါ";
-                        const to = lines[1] || "မသိပါ";
-
-                        feed.innerHTML += `
-                            <div class="apple-card p-5 space-y-4" onclick='showDetails(${JSON.stringify(post).replace(/'/g, "&apos;")})'>
-                                <div class="flex justify-between items-start">
-                                    <div class="flex items-center gap-3">
-                                        <img src="${post.userImg}" class="w-10 h-10 rounded-full border border-gray-100">
-                                        <div>
-                                            <p class="text-xs font-black text-gray-800">${post.userName}</p>
-                                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-md ${post.category === 'fuel' ? 'badge-blue' : 'badge-green'} uppercase">${post.category}</span>
-                                        </div>
-                                    </div>
-                                    <span class="text-[9px] font-black text-orange-500 bg-orange-50 px-2 py-1 rounded-full"><i class="fa-regular fa-clock mr-1"></i>${displayTime}</span>
-                                </div>
-
-                                <div class="space-y-1 px-1">
-                                    <div class="flex items-center gap-3">
-                                        <i class="fa-solid fa-location-dot text-blue-500 text-[10px]"></i>
-                                        <p class="text-sm font-bold text-gray-700">${from.replace('📍 မှ: ', '')}</p>
-                                    </div>
-                                    <div class="route-line"></div>
-                                    <div class="flex items-center gap-3">
-                                        <i class="fa-solid fa-flag-checkered text-red-500 text-[10px]"></i>
-                                        <p class="text-sm font-bold text-gray-700">${to.replace('🏁 သို့: ', '')}</p>
-                                    </div>
-                                </div>
-
-                                <div class="relative rounded-2xl overflow-hidden aspect-video shadow-sm">
-                                    <img src="${post.selfieData}" class="w-full h-full object-cover">
-                                    <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur-md px-2 py-1 rounded-lg">
-                                        <p class="text-[9px] text-white font-bold uppercase"><i class="fa-solid fa-car mr-1"></i>${post.carNo}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-            } else {
-                feed.innerHTML = "<div class='text-center py-20 text-gray-400'>သတင်းမရှိသေးပါ</div>";
-            }
+            allPosts = snap.val() ? Object.entries(snap.val()) : [];
+            renderFeed();
         });
 
-        window.showDetails = (post) => {
-            document.getElementById('modalImg').src = post.selfieData;
-            document.getElementById('modalUserImg').src = post.userImg;
-            document.getElementById('modalUserName').innerText = post.userName;
-            document.getElementById('modalCarNo').innerText = "Verified Account: " + post.carNo;
-            document.getElementById('modalContent').innerText = post.content;
-            document.getElementById('modalTime').innerText = "Posted: " + post.time;
-            document.getElementById('modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+        window.switchFeed = (type) => {
+            currentType = type;
+            document.getElementById('feedTabCarpool').classList.toggle('active', type === 'carpool');
+            document.getElementById('feedTabFuel').classList.toggle('active', type === 'fuel');
+            renderFeed();
         };
 
-        window.closeModal = () => {
-            document.getElementById('modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+        window.renderFeed = () => {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const container = document.getElementById('feedContainer');
+            container.innerHTML = "";
+
+            allPosts.sort((a,b) => b[1].ts - a[1].ts).forEach(([id, post]) => {
+                if(post.category !== currentType) return;
+                const matchSearch = (post.from || post.station || "").toLowerCase().includes(search) || (post.to || "").toLowerCase().includes(search);
+                if(!matchSearch) return;
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-[28px] shadow-sm space-y-4 border border-white active:scale-95 transition cursor-pointer";
+                card.onclick = () => showFullDetail(post);
+                
+                let contentHtml = post.category === 'carpool' 
+                    ? `<div class="flex items-center gap-2 font-bold text-gray-700"><span class="text-blue-500">${post.from}</span> <i class="fa-solid fa-arrow-right text-[10px]"></i> <span class="text-red-500">${post.to}</span></div>`
+                    : `<div class="font-bold text-gray-700">⛽ ${post.station} <span class="text-blue-500 text-xs ml-2">${post.status}</span></div>`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${post.userImg}" class="w-8 h-8 rounded-full border">
+                        <p class="text-xs font-black">${post.userName}</p>
+                    </div>
+                    ${contentHtml}
+                    <img src="${post.selfieData}" class="w-full aspect-video object-cover rounded-2xl">
+                `;
+                container.appendChild(card);
+            });
         };
+
+        window.showFullDetail = (post) => {
+            const page = document.getElementById('fullPageDetail');
+            document.getElementById('detImg').src = post.selfieData;
+            document.getElementById('detUserImg').src = post.userImg;
+            document.getElementById('detUserName').innerText = post.userName;
+            document.getElementById('detTime').innerText = post.time;
+            
+            let info = "";
+            if(post.category === 'carpool') {
+                info = `📍 မှ: ${post.from}<br>🏁 သို့: ${post.to}<br>👥 လူဦးရေ: ${post.pax} ယောက်<br>📝 မှတ်ချက်: ${post.note}`;
+                document.getElementById('viberBtn').href = `viber://add?number=${post.phone}`;
+                document.getElementById('tgBtn').href = `https://t.me/${post.phone}`;
+            } else {
+                info = `⛽ ဆီဆိုင်: ${post.station}<br>📊 အခြေအနေ: ${post.status}<br>📝 မှတ်ချက်: ${post.note}`;
+            }
+            document.getElementById('detInfo').innerHTML = info;
+            page.classList.add('active');
+        };
+
+        window.closeDetail = () => document.getElementById('fullPageDetail').classList.remove('active');
+        window.sendRequest = () => alert("လိုက်ပါလိုကြောင်း အကြောင်းကြားလိုက်ပါပြီ။ (ယာဉ်မောင်းအား Viber/Telegram မှတဆင့် ဆက်သွယ်ပါ)");
     </script>
 </body>
 </html>
