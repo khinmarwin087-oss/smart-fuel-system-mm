@@ -3,12 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Feed</title>
+    <title>YNS Feed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
+        .apple-card { background: white; border-radius: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid white; }
+        .modal-bg { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); }
+    </style>
+</head>
+<body class="pb-24">
+    <div class="max-w-md mx-auto p-5">
+        <header class="flex justify-between items-center py-6">
+            <h1 class="text-3xl font-black tracking-tight">Feed</h1>
+            <i class="fa-solid fa-bell text-gray-300"></i>
+        </header>
+
+        <div id="feedContainer" class="space-y-5">
+            <p class="text-center text-gray-400 text-xs">သတင်းများ ရှာဖွေနေသည်...</p>
+        </div>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 z-[100] modal-bg flex items-center justify-center p-5">
+        <div class="bg-white w-full max-w-sm rounded-[35px] overflow-hidden relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 bg-black/10 text-white rounded-full backdrop-blur-md z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="modalImg" src="" class="w-full aspect-square object-cover">
+            <div class="p-6 space-y-4">
+                <div class="flex items-center gap-3">
+                    <img id="modalUserImg" src="" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h3 id="modalUserName" class="font-bold text-gray-800"></h3>
+                        <p id="modalCarNo" class="text-xs text-blue-600 font-bold"></p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-2xl text-sm text-gray-700" id="modalContent"></div>
+                <p class="text-[10px] text-gray-400 font-bold uppercase" id="modalTime"></p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-md border-t flex justify-around items-center px-6 z-50">
+        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
+        <a href="post.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
+        <a href="feed.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
+    </nav>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
@@ -17,43 +61,51 @@
             projectId: "yns-taxi",
             appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         onValue(ref(db, 'yns_posts'), (snap) => {
-            const container = document.getElementById('feedContainer');
-            container.innerHTML = "";
+            const feed = document.getElementById('feedContainer');
+            feed.innerHTML = "";
             const data = snap.val();
-            if(data) {
+            if (data) {
                 Object.entries(data).sort((a,b) => b[1].ts - a[1].ts).forEach(([id, post]) => {
-                    container.innerHTML += `
-                        <div class="bg-white p-5 rounded-[24px] shadow-sm mb-4 border border-white">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase ${post.category==='fuel'?'bg-blue-100 text-blue-600':'bg-green-100 text-green-600'}">${post.category}</span>
-                                <button onclick="window.del('${id}')" class="text-gray-300 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
+                    const timeLeft = post.expireAt - Date.now();
+                    if (timeLeft > 0) {
+                        const mins = Math.floor(timeLeft / 60000);
+                        const displayTime = mins > 60 ? Math.floor(mins/60) + " နာရီအလို" : mins + " မိနစ်အလို";
+                        
+                        const postHtml = `
+                            <div class="apple-card p-4 space-y-3" onclick='showDetails(${JSON.stringify(post).replace(/'/g, "&apos;")})'>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <img src="${post.userImg}" class="w-8 h-8 rounded-full">
+                                        <div><p class="text-xs font-bold">${post.userName}</p><p class="text-[9px] text-blue-500 font-bold uppercase">${post.carNo}</p></div>
+                                    </div>
+                                    <span class="text-[9px] font-black text-orange-500 bg-orange-50 px-2 py-1 rounded-full"><i class="fa-regular fa-clock"></i> ${displayTime}</span>
+                                </div>
+                                <p class="text-sm text-gray-700 line-clamp-2">${post.content}</p>
+                                <img src="${post.selfieData}" class="w-full aspect-[4/3] object-cover rounded-2xl shadow-sm">
                             </div>
-                            <p class="text-[15px] font-medium text-gray-800 leading-snug">${post.content}</p>
-                            <p class="text-[10px] text-gray-400 mt-3 font-semibold tracking-tighter">${post.time}</p>
-                        </div>`;
+                        `;
+                        feed.innerHTML += postHtml;
+                    }
                 });
-            }
+            } else feed.innerHTML = "<p class='text-center py-20 text-gray-400'>သတင်းမရှိသေးပါ</p>";
         });
 
-        window.del = (id) => confirm("ဖျက်မှာလား?") && remove(ref(db, `yns_posts/${id}`));
-    </script>
-    <style>body { background: #F2F2F7; font-family: -apple-system, sans-serif; }</style>
-</head>
-<body class="pb-24">
-    <div class="max-w-md mx-auto p-6 space-y-6">
-        <h1 class="text-3xl font-black mt-4 tracking-tight">News Feed</h1>
-        <div id="feedContainer"></div>
-    </div>
+        window.showDetails = (post) => {
+            document.getElementById('modalImg').src = post.selfieData;
+            document.getElementById('modalUserImg').src = post.userImg;
+            document.getElementById('modalUserName').innerText = post.userName;
+            document.getElementById('modalCarNo').innerText = "ကားနံပါတ်: " + post.carNo;
+            document.getElementById('modalContent').innerText = post.content;
+            document.getElementById('modalTime').innerText = "POSTED AT: " + post.time;
+            document.getElementById('modal').classList.remove('hidden');
+        };
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-6">
-        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
-        <a href="post.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
-        <a href="feed.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
-    </nav>
+        window.closeModal = () => document.getElementById('modal').classList.add('hidden');
+    </script>
 </body>
 </html>
-
