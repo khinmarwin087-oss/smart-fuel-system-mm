@@ -10,13 +10,10 @@
         body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
         .tab-active { background: white; color: #007AFF; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .input-box { background: #F9F9F9; border-radius: 16px; border: 1px solid #E5E5E5; padding: 14px; width: 100%; outline: none; font-size: 14px; }
-        #toast { visibility: hidden; min-width: 250px; background: rgba(0,0,0,0.8); color: white; text-align: center; border-radius: 20px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 100px; transform: translateX(-50%); backdrop-filter: blur(10px); }
-        #toast.show { visibility: visible; animation: fadein 0.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
+        .input-box:focus { border-color: #007AFF; background: white; }
     </style>
 </head>
 <body class="pb-28">
-    <div id="toast"></div>
     <div class="max-w-md mx-auto p-6 space-y-6">
         <h1 class="text-3xl font-black">Post တင်ရန်</h1>
 
@@ -59,7 +56,7 @@
             </div>
             <img id="previewImg" class="hidden w-full rounded-3xl aspect-square object-cover border-4 border-white shadow-md">
 
-            <button onclick="startCamera()" class="w-full py-4 bg-gray-100 rounded-2xl font-bold text-sm">📷 Selfie အရင်ရိုက်ပါ</button>
+            <button onclick="startCamera()" class="w-full py-4 bg-gray-100 rounded-2xl font-bold text-sm">📷 Selfie ရိုက်ပါ</button>
             <button id="sendBtn" onclick="submitPost()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">Post တင်မည်</button>
         </div>
     </div>
@@ -75,7 +72,6 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // *** ဒီနေရာမှာ အစ်ကို့ Firebase Config ကို အစားထိုးပါ ***
         const firebaseConfig = {
             apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
             authDomain: "yns-taxi.firebaseapp.com",
@@ -107,9 +103,11 @@
         };
 
         window.startCamera = async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            document.getElementById('video').srcObject = stream;
-            document.getElementById('camUI').classList.remove('hidden');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('video').srcObject = stream;
+                document.getElementById('camUI').classList.remove('hidden');
+            } catch (err) { alert("Camera ဖွင့်၍မရပါ။ Permission စစ်ဆေးပါ။"); }
         };
 
         window.takePhoto = () => {
@@ -121,15 +119,17 @@
             document.getElementById('previewImg').src = capturedImg;
             document.getElementById('previewImg').classList.remove('hidden');
             document.getElementById('camUI').classList.add('hidden');
-            video.srcObject.getTracks().forEach(t => t.stop());
+            if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
         };
 
         window.submitPost = async () => {
             const ex = document.getElementById('expireTime').value;
-            if(!capturedImg || !ex) return alert("အချက်အလက်စုံအောင် ဖြည့်ပါ");
+            if(!capturedImg) return alert("Selfie အရင်ရိုက်ပေးပါ");
+            if(!ex) return alert("Post သက်တမ်းကုန်ဆုံးချိန် ထည့်ပေးပါ");
 
             const postData = {
                 category: activeTab,
+                uid: auth.currentUser.uid,
                 userName: auth.currentUser.displayName,
                 userImg: auth.currentUser.photoURL,
                 selfieData: capturedImg,
@@ -140,18 +140,34 @@
                 ts: Date.now()
             };
 
+            // Tab အမျိုးအစားအလိုက် ထပ်တိုးဒေတာများ ထည့်ခြင်း
             if(activeTab === 'carpool') {
+                const pax = parseInt(document.getElementById('paxLimit').value);
+                if(!document.getElementById('fromPlace').value || !document.getElementById('toPlace').value || isNaN(pax)) {
+                    return alert("ခရီးစဉ်နှင့် လူဦးရေ အချက်အလက်ဖြည့်ပါ");
+                }
                 postData.from = document.getElementById('fromPlace').value;
                 postData.to = document.getElementById('toPlace').value;
-                postData.pax = document.getElementById('paxLimit').value;
+                postData.pax = pax;
+                postData.availableSeats = pax; // စတင်တင်ချိန်မှာ ကျန်ရှိသောနေရာသည် သတ်မှတ်ထားသော လူဦးရေအတိုင်းဖြစ်သည်
                 postData.phone = document.getElementById('contactPhone').value;
             } else {
+                if(!document.getElementById('stationName').value) return alert("ဆီဆိုင်အမည် ဖြည့်ပါ");
                 postData.station = document.getElementById('stationName').value;
                 postData.status = document.getElementById('fuelStatus').value;
             }
 
-            await push(ref(db, 'yns_posts'), postData);
-            window.location.href = "feed.html";
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('sendBtn').innerText = "တင်နေပါသည်...";
+
+            try {
+                await push(ref(db, 'yns_posts'), postData);
+                window.location.href = "feed.html";
+            } catch (err) {
+                alert("Error: " + err.message);
+                document.getElementById('sendBtn').disabled = false;
+                document.getElementById('sendBtn').innerText = "Post တင်မည်";
+            }
         };
     </script>
 </body>
