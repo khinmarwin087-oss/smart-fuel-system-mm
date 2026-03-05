@@ -3,10 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YNS Secure Post</title>
+    <title>Post News</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+    <style>
+        body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
+        .apple-card { background: white; border-radius: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="pb-24">
+    <div class="max-w-md mx-auto p-6 space-y-6">
+        <h1 class="text-3xl font-black mt-4">Post</h1>
+        <div class="apple-card p-6 space-y-4">
+            <textarea id="postContent" placeholder="သတင်းအသေးစိတ်ရေးပါ..." class="w-full p-4 bg-gray-50 rounded-2xl h-24 outline-none"></textarea>
+            
+            <div class="space-y-1">
+                <p class="text-[10px] font-bold text-gray-400 uppercase">ပြသမည့်အချိန်ကုန်ဆုံးချိန်</p>
+                <input type="datetime-local" id="expireTime" class="w-full p-3 bg-gray-50 rounded-xl outline-none text-sm">
+            </div>
+
+            <div id="camUI" class="hidden rounded-2xl overflow-hidden bg-black aspect-square relative">
+                <video id="video" class="w-full h-full object-cover" autoplay playsinline></video>
+                <button onclick="takePhoto()" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-14 h-14 bg-white rounded-full border-4 border-gray-300"></button>
+            </div>
+            <img id="previewImg" class="hidden w-full rounded-2xl aspect-square object-cover shadow-inner border">
+
+            <button onclick="startCamera()" class="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-sm"><i class="fa-solid fa-camera mr-2"></i>Selfie ရိုက်ရန်</button>
+            <div class="flex gap-2">
+                <button id="sendBtn" onclick="sendPost('fuel')" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold">ဆီဆိုင်</button>
+                <button onclick="sendPost('carpool')" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold">လမ်းကြုံ</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-6 z-50">
+        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
+        <a href="post.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
+        <a href="feed.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
+    </nav>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -27,79 +62,48 @@
         let userCarNo = "N/A";
         let capturedImg = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) window.location.href = "index.html";
-            const snapshot = await get(child(ref(db), `users/${user.uid}`));
-            if (snapshot.exists()) userCarNo = snapshot.val().carNo;
+        onAuthStateChanged(auth, async (u) => {
+            if (!u) window.location.href = "index.html";
+            const s = await get(child(ref(db), `users/${u.uid}`));
+            if(s.exists()) userCarNo = s.val().carNo;
         });
 
         window.startCamera = async () => {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             document.getElementById('video').srcObject = stream;
-            document.getElementById('video').play();
             document.getElementById('camUI').classList.remove('hidden');
         };
 
         window.takePhoto = () => {
             const canvas = document.createElement('canvas');
             const video = document.getElementById('video');
-            canvas.width = 300; // Storage သက်သာအောင် size လျှော့သိမ်းမည်
-            canvas.height = 300;
-            canvas.getContext('2d').drawImage(video, 0, 0, 300, 300);
-            capturedImg = canvas.toDataURL('image/jpeg', 0.5); // Quality လျှော့ချပြီး size သက်သာစေရန်
+            canvas.width = 400; canvas.height = 400;
+            canvas.getContext('2d').drawImage(video, 0, 0, 400, 400);
+            capturedImg = canvas.toDataURL('image/jpeg', 0.5);
             document.getElementById('previewImg').src = capturedImg;
             document.getElementById('previewImg').classList.remove('hidden');
             document.getElementById('camUI').classList.add('hidden');
             video.srcObject.getTracks().forEach(t => t.stop());
         };
 
-        window.sendPost = async (category) => {
+        window.sendPost = async (cat) => {
             const content = document.getElementById('postContent').value;
-            const expireTime = document.getElementById('expireTime').value;
-            if(!content || !expireTime || !capturedImg) return alert("အချက်အလက်စုံလင်စွာဖြည့်ပါ (Selfie အပါအဝင်)");
+            const ex = document.getElementById('expireTime').value;
+            if(!content || !ex || !capturedImg) return alert("အချက်အလက်ဖြည့်ပါ");
 
-            const expireTimestamp = new Date(expireTime).getTime();
-            if(expireTimestamp <= Date.now()) return alert("ကုန်ဆုံးချိန်သည် အနာဂတ်အချိန်ဖြစ်ရပါမည်");
-
+            document.getElementById('sendBtn').disabled = true;
             await push(ref(db, 'yns_posts'), {
-                content, category,
+                content, category: cat,
                 userName: auth.currentUser.displayName,
                 userImg: auth.currentUser.photoURL,
                 carNo: userCarNo,
-                selfieData: capturedImg, // Base64 String ဖြင့် Database တွင်တိုက်ရိုက်သိမ်းသည်
-                expireAt: expireTimestamp, // Countdown အတွက်
+                selfieData: capturedImg,
+                expireAt: new Date(ex).getTime(),
                 time: new Date().toLocaleString(),
                 ts: Date.now()
             });
-
-            alert("Post တင်ပြီးပါပြီ");
             window.location.href = "feed.html";
         };
     </script>
-</head>
-<body class="bg-[#F2F2F7] pb-24">
-    <div class="max-w-md mx-auto p-6 space-y-6">
-        <h1 class="text-3xl font-black mt-4">Security Post</h1>
-        <div class="bg-white p-6 rounded-[28px] shadow-sm space-y-4 border border-white">
-            <textarea id="postContent" placeholder="အသေးစိတ်ရေးပါ..." class="w-full p-4 bg-gray-50 rounded-2xl h-24 outline-none"></textarea>
-            
-            <div class="space-y-2">
-                <p class="text-[10px] font-bold text-gray-400 uppercase">Post ပြသမည့် နောက်ဆုံးအချိန်</p>
-                <input type="datetime-local" id="expireTime" class="w-full p-3 bg-gray-50 rounded-xl outline-none text-sm">
-            </div>
-
-            <div id="camUI" class="hidden rounded-2xl overflow-hidden bg-black aspect-square relative">
-                <video id="video" class="w-full h-full object-cover"></video>
-                <button onclick="takePhoto()" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-14 h-14 bg-white rounded-full border-4 border-gray-300"></button>
-            </div>
-            <img id="previewImg" class="hidden w-full rounded-2xl aspect-square object-cover shadow-inner">
-
-            <button onclick="startCamera()" class="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-bold text-sm"><i class="fa-solid fa-camera mr-2"></i>Selfie ရိုက်ရန်</button>
-            <div class="flex gap-2">
-                <button onclick="sendPost('fuel')" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold">ဆီဆိုင်</button>
-                <button onclick="sendPost('carpool')" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold">လမ်းကြုံ</button>
-            </div>
-        </div>
-    </div>
-    </body>
+</body>
 </html>
