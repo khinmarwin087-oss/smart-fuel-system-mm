@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
+            authDomain: "yns-taxi.firebaseapp.com",
+            databaseURL: "https://yns-taxi-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "yns-taxi",
+            storageBucket: "yns-taxi.firebasestorage.app",
+            messagingSenderId: "390164927701",
+            appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.sendPost = (category) => {
+            const content = category === 'fuel' ? document.getElementById('fText').value : document.getElementById('cText').value;
+            if(!content) return alert("စာသားရေးပါ");
+
+            push(ref(db, 'yns_posts'), {
+                content,
+                category,
+                time: new Date().toLocaleString(),
+                ts: Date.now()
+            }).then(() => {
+                alert("တင်ပြီးပါပြီ");
+                window.location.href = "feed.html";
+            });
+        };
+    </script>
+    <style>body { background: #F2F2F7; font-family: -apple-system, sans-serif; }</style>
+</head>
+<body class="pb-24">
+    <div class="max-w-md mx-auto p-6 space-y-6">
+        <h1 class="text-3xl font-black mt-4">Create</h1>
+        
+        <div class="bg-white p-5 rounded-[24px] shadow-sm border border-white space-y-3">
+            <h3 class="font-bold text-blue-600 flex items-center gap-2"><i class="fa-solid fa-gas-pump"></i> ဆီဆိုင်သတင်း</h3>
+            <textarea id="fText" placeholder="ဘယ်ဆိုင်မှာ ဆီရှိလဲ..." class="w-full p-4 bg-gray-50 rounded-2xl text-sm outline-none h-24 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            <button onclick="sendPost('fuel')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Update တင်မည်</button>
+        </div>
+
+        <div class="bg-white p-5 rounded-[24px] shadow-sm border border-white space-y-3">
+            <h3 class="font-bold text-green-600 flex items-center gap-2"><i class="fa-solid fa-car"></i> လမ်းကြုံ / Carpool</h3>
+            <textarea id="cText" placeholder="ဘယ်ကနေ ဘယ်ကိုလဲ..." class="w-full p-4 bg-gray-50 rounded-2xl text-sm outline-none h-24 focus:ring-2 focus:ring-green-500 transition"></textarea>
+            <button onclick="sendPost('carpool')" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Carpool တင်မည်</button>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-6">
+        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Home</span></a>
+        <a href="post.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle text-xl"></i><span class="text-[10px] font-bold">Post</span></a>
+        <a href="feed.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-rss text-xl"></i><span class="text-[10px] font-bold">Feed</span></a>
+    </nav>
+</body>
+</html>
+
