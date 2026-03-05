@@ -3,97 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post - YNS</title>
+    <title>Post - YNS Taxi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background: #F2F2F7; font-family: -apple-system, sans-serif; }
-        .tab-active { background: white; color: #007AFF; shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .input-box { background: #F9F9F9; border-radius: 16px; border: 1px solid #E5E5E5; padding: 14px; width: 100%; outline: none; transition: 0.3s; font-size: 14px; }
-        .input-box:focus { border-color: #007AFF; background: white; }
+        .tab-active { background: white; color: #007AFF; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .input-box { background: #F9F9F9; border-radius: 16px; border: 1px solid #E5E5E5; padding: 14px; width: 100%; outline: none; font-size: 14px; }
+        #toast { visibility: hidden; min-width: 250px; background: rgba(0,0,0,0.8); color: white; text-align: center; border-radius: 20px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 100px; transform: translateX(-50%); backdrop-filter: blur(10px); }
+        #toast.show { visibility: visible; animation: fadein 0.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
     </style>
 </head>
 <body class="pb-28">
+    <div id="toast"></div>
     <div class="max-w-md mx-auto p-6 space-y-6">
-        <h1 class="text-3xl font-black tracking-tight">Post တင်ရန်</h1>
+        <h1 class="text-3xl font-black">Post တင်ရန်</h1>
 
-        <div class="bg-gray-200/50 p-1.5 rounded-2xl flex gap-1">
-            <button onclick="toggleTab('carpool')" id="tabCarpool" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all tab-active">🚗 လမ်းကြုံ</button>
-            <button onclick="toggleTab('fuel')" id="tabFuel" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all text-gray-500">⛽ ဆီဆိုင်</button>
+        <div class="bg-gray-200/50 p-1 rounded-2xl flex">
+            <button onclick="toggleTab('carpool')" id="tabCarpool" class="flex-1 py-2.5 rounded-xl font-bold text-sm tab-active">🚗 လမ်းကြုံ</button>
+            <button onclick="toggleTab('fuel')" id="tabFuel" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-gray-500">⛽ ဆီဆိုင်</button>
         </div>
 
-        <div class="bg-white p-6 rounded-[32px] shadow-sm space-y-5">
+        <div class="bg-white p-6 rounded-[32px] shadow-sm space-y-4">
             <div id="carpoolFields" class="space-y-4">
                 <div class="grid grid-cols-2 gap-3">
                     <input id="fromPlace" placeholder="📍 မှ (မြို့နယ်)" class="input-box">
                     <input id="toPlace" placeholder="🏁 သို့ (မြို့နယ်)" class="input-box">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <select id="paxLimit" class="input-box">
-                        <option value="" disabled selected>👥 လူဦးရေ</option>
-                        <option value="1">၁ ယောက်</option><option value="2">၂ ယောက်</option>
-                        <option value="3">၃ ယောက်</option><option value="4">၄ ယောက်</option>
-                    </select>
-                    <input id="contactPhone" placeholder="📞 ဖုန်းနံပါတ်" class="input-box">
+                    <input id="paxLimit" type="number" placeholder="👥 လူဦးရေ" class="input-box">
+                    <input id="contactPhone" placeholder="📞 ဖုန်း (09...)" class="input-box">
                 </div>
             </div>
 
             <div id="fuelFields" class="hidden space-y-4">
-                <input id="stationName" placeholder="⛽ ဆီဆိုင်အမည်/နေရာ" class="input-box">
+                <input id="stationName" placeholder="⛽ ဆီဆိုင်အမည်" class="input-box">
                 <select id="fuelStatus" class="input-box">
-                    <option value="ရရှိနိုင်သည်">✅ ဆီရရှိနိုင်သည်</option>
+                    <option value="ဆီရရှိနိုင်သည်">✅ ဆီရရှိနိုင်သည်</option>
                     <option value="တန်းစီနေရသည်">⏳ တန်းစီနေရသည်</option>
                     <option value="ကုန်သွားပြီ">❌ ကုန်သွားပြီ</option>
                 </select>
             </div>
 
             <div class="space-y-1">
-                <p class="text-[10px] font-bold text-gray-400 uppercase ml-2">ကုန်ဆုံးချိန် (Post ပျောက်မည့်အချိန်)</p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase ml-2">Post ပျောက်မည့်အချိန်</p>
                 <input type="datetime-local" id="expireTime" class="input-box">
             </div>
+            
+            <textarea id="postNote" placeholder="အခြားမှတ်ချက်များ..." class="input-box h-20 resize-none"></textarea>
 
-            <textarea id="postNote" placeholder="မှတ်ချက် ရေးရန်..." class="input-box h-24 resize-none"></textarea>
-
-            <div id="camUI" class="hidden rounded-3xl overflow-hidden bg-black aspect-square relative shadow-inner">
+            <div id="camUI" class="hidden rounded-3xl overflow-hidden aspect-square relative bg-black">
                 <video id="video" class="w-full h-full object-cover" autoplay playsinline></video>
-                <button onclick="takePhoto()" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full border-8 border-gray-300"></button>
+                <button onclick="takePhoto()" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full border-8 border-gray-200"></button>
             </div>
-            <img id="previewImg" class="hidden w-full rounded-3xl aspect-square object-cover shadow-md border-4 border-white">
+            <img id="previewImg" class="hidden w-full rounded-3xl aspect-square object-cover border-4 border-white shadow-md">
 
-            <button onclick="startCamera()" class="w-full py-4 bg-gray-100 text-gray-800 rounded-2xl font-bold text-sm">
-                <i class="fa-solid fa-camera mr-2"></i> Selfie ရိုက်ပါ
-            </button>
-
-            <button id="sendBtn" onclick="submitPost()" class="w-full bg-[#007AFF] text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition">Post တင်မည်</button>
+            <button onclick="startCamera()" class="w-full py-4 bg-gray-100 rounded-2xl font-bold text-sm">📷 Selfie အရင်ရိုက်ပါ</button>
+            <button id="sendBtn" onclick="submitPost()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">Post တင်မည်</button>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center px-6 z-50">
-        <a href="index.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-house"></i><span class="text-[10px] font-bold">Home</span></a>
-        <a href="post.html" class="text-blue-600 flex flex-col items-center gap-1"><i class="fa-solid fa-plus-circle"></i><span class="text-[10px] font-bold">Post</span></a>
-        <a href="feed.html" class="text-gray-400 flex flex-col items-center gap-1"><i class="fa-solid fa-rss"></i><span class="text-[10px] font-bold">Feed</span></a>
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center z-50">
+        <a href="index.html" class="text-gray-400 flex flex-col items-center"><i class="fa-solid fa-house"></i><span class="text-[10px]">Home</span></a>
+        <a href="post.html" class="text-blue-600 flex flex-col items-center"><i class="fa-solid fa-plus-circle"></i><span class="text-[10px]">Post</span></a>
+        <a href="feed.html" class="text-gray-400 flex flex-col items-center"><i class="fa-solid fa-rss"></i><span class="text-[10px]">Feed</span></a>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your Firebase Config (Keep it the same)
-        const firebaseConfig = { ... }; 
+        // *** ဒီနေရာမှာ အစ်ကို့ Firebase Config ကို အစားထိုးပါ ***
+        const firebaseConfig = {
+            apiKey: "AIzaSyDe5bR1dlr_CD5pI8JE7RF0fJ9qJ0FL2Ew",
+            authDomain: "yns-taxi.firebaseapp.com",
+            databaseURL: "https://yns-taxi-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "yns-taxi",
+            appId: "1:390164927701:web:4769bafcc71d440e5b3e5c"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
         let activeTab = 'carpool';
         let capturedImg = null;
+        let userCarNo = "N/A";
 
-        window.toggleTab = (type) => {
-            activeTab = type;
-            document.getElementById('carpoolFields').classList.toggle('hidden', type !== 'carpool');
-            document.getElementById('fuelFields').classList.toggle('hidden', type !== 'fuel');
-            document.getElementById('tabCarpool').className = type === 'carpool' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm transition-all tab-active' : 'flex-1 py-2.5 rounded-xl font-bold text-sm transition-all text-gray-500';
-            document.getElementById('tabFuel').className = type === 'fuel' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm transition-all tab-active' : 'flex-1 py-2.5 rounded-xl font-bold text-sm transition-all text-gray-500';
+        onAuthStateChanged(auth, async (u) => {
+            if (!u) window.location.href = "index.html";
+            const s = await get(child(ref(db), `users/${u.uid}`));
+            if(s.exists()) userCarNo = s.val().carNo;
+        });
+
+        window.toggleTab = (t) => {
+            activeTab = t;
+            document.getElementById('carpoolFields').classList.toggle('hidden', t !== 'carpool');
+            document.getElementById('fuelFields').classList.toggle('hidden', t !== 'fuel');
+            document.getElementById('tabCarpool').className = t === 'carpool' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm tab-active' : 'flex-1 py-2.5 rounded-xl font-bold text-sm text-gray-500';
+            document.getElementById('tabFuel').className = t === 'fuel' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm tab-active' : 'flex-1 py-2.5 rounded-xl font-bold text-sm text-gray-500';
         };
 
         window.startCamera = async () => {
@@ -115,9 +125,8 @@
         };
 
         window.submitPost = async () => {
-            if(!capturedImg) return alert("Selfie ရိုက်ပေးပါ");
             const ex = document.getElementById('expireTime').value;
-            if(!ex) return alert("ကုန်ဆုံးချိန် ထည့်ပါ");
+            if(!capturedImg || !ex) return alert("အချက်အလက်စုံအောင် ဖြည့်ပါ");
 
             const postData = {
                 category: activeTab,
@@ -126,8 +135,9 @@
                 selfieData: capturedImg,
                 expireAt: new Date(ex).getTime(),
                 note: document.getElementById('postNote').value,
-                ts: Date.now(),
-                uid: auth.currentUser.uid
+                carNo: userCarNo,
+                time: new Date().toLocaleString(),
+                ts: Date.now()
             };
 
             if(activeTab === 'carpool') {
