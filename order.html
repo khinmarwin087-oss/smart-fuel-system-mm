@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROSCA Pearl Premium Dashboard</title>
+    <style>
+        :root {
+            --bg-main: #f4f6f9;
+            --pearl-bg: #ffffff;
+            --pearl-border: #e2e8f0;
+            --primary: #1e293b;
+            --primary-light: #475569;
+            --accent-gold: #b45309;
+            --emerald: #0d9488;
+            --rose: #e11d48;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .dashboard {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* Top Bar & Secret Logo Area */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s ease;
+        }
+        .logo:active { transform: scale(0.92); }
+
+        .brand-text h1 { font-size: 16px; color: var(--text-main); font-weight: 700; letter-spacing: -0.3px; }
+        .brand-text p { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+        .admin-indicator {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 30px;
+            background: var(--pearl-bg);
+            border: 1px solid var(--pearl-border);
+            color: var(--text-muted);
+            box-shadow: var(--shadow-soft);
+            transition: 0.3s;
+        }
+        .admin-indicator.on {
+            background: rgba(13, 148, 136, 0.08);
+            border-color: var(--emerald);
+            color: var(--emerald);
+            cursor: pointer;
+        }
+
+        /* Hero Payout Banner */
+        .payout-banner {
+            background: var(--pearl-bg);
+            border: 1px solid var(--pearl-border);
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            box-shadow: var(--shadow-premium);
+            overflow: hidden;
+        }
+
+        .payout-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--text-muted));
+        }
+
+        .banner-label { font-size: 10px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .current-turn-name { font-size: 24px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; letter-spacing: -0.5px; }
+        
+        .payout-meta {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+            font-size: 12px;
+        }
+        .payout-meta span { color: var(--text-muted); font-weight: 500; }
+        .payout-meta b { color: var(--text-main); font-weight: 700; }
+
+        /* Stats Grid Setup */
+        .summary-title { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: -10px; display: flex; align-items: center; gap: 6px; opacity: 0.85; }
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-box { background: var(--pearl-bg); border: 1px solid var(--pearl-border); border-radius: 18px; padding: 16px; box-shadow: var(--shadow-soft); }
+        .stat-box span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+        .stat-box .num { font-size: 18px; font-weight: 700; color: var(--text-main); }
+
+        /* Progress Card */
+        .progress-card { background: var(--pearl-bg); border: 1px solid var(--pearl-border); border-radius: 18px; padding: 18px; box-shadow: var(--shadow-soft); }
+        .progress-meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 10px; font-weight: 700; }
+        .bar-bg { background: #f1f5f9; height: 7px; border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #334155, #0f172a); width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Search Layout */
+        .search-input { width: 100%; background: var(--pearl-bg); border: 1px solid var(--pearl-border); padding: 14px 18px; border-radius: 16px; color: var(--text-main); font-size: 13px; font-weight: 500; outline: none; box-shadow: var(--shadow-soft); transition: 0.2s; }
+        .search-input:focus { border-color: var(--text-muted); box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.08); }
+
+        /* Section Header */
+        .section-header { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+        /* 2-Column Grid Layout */
+        .grid-flow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .grid-item {
+            background: var(--pearl-bg);
+            border: 1px solid var(--pearl-border);
+            border-radius: 20px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.2s ease;
+        }
+        .grid-item.anon-mode { background: rgba(255,255,255,0.6); border-style: dashed; }
+        .grid-item.is-active-turn { border-color: var(--accent-gold); background: rgba(180, 83, 9, 0.02); box-shadow: 0 4px 20px rgba(180, 83, 9, 0.05); }
+
+        .member-profile { display: flex; align-items: center; gap: 10px; }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .member-info { flex: 1; min-width: 0; }
+        .member-info h3 { font-size: 13px; font-weight: 700; color: var(--text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .member-info p { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-top: 1px; }
+
+        /* Status Components */
+        .status-container { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f8fafc; padding-top: 10px; }
+        .status-text { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .status-text.waiting { color: var(--rose); }
+        .status-text.success { color: var(--emerald); }
+
+        /* Premium Switch */
+        .mini-switch { width: 34px; height: 20px; background: #e2e8f0; border-radius: 10px; position: relative; cursor: pointer; transition: 0.2s; }
+        .mini-switch::after { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .mini-switch.checked { background: var(--emerald); }
+        .mini-switch.checked::after { transform: translateX(14px); }
+
+        /* Collapsible Accordion */
+        .accordion-wrapper { background: var(--pearl-bg); border: 1px solid var(--pearl-border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-soft); }
+        .accordion-btn { width: 100%; background: none; border: none; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; color: var(--emerald); font-size: 13px; font-weight: 700; cursor: pointer; }
+        
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+        .accordion-content.open { max-height: 1000px; padding-bottom: 16px; overflow-y: auto; }
+
+        .row-item { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+
+        /* Toast Alert */
+        .toast { position: fixed; bottom: 24px; background: #0f172a; color: #f8fafc; font-size: 12px; font-weight: 600; padding: 12px 24px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transform: translateY(100px); opacity: 0; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; }
+        .toast.pop { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="toast" id="alert-toast">စနစ်သတိပေးချက်</div>
+
+<div class="dashboard">
+    
+    <!-- Top Bar Navigation -->
+    <div class="top-bar">
+        <div class="brand">
+            <div class="logo" onclick="handleLogoClick()">R</div>
+            <div class="brand-text">
+                <h1>ROSCA Enterprise</h1>
+                <p>Pearl White Biometric Edition</p>
+            </div>
+        </div>
+        <div class="admin-indicator" id="admin-tag" onclick="logoutAdmin()">🔒 Member Mode</div>
+    </div>
+
+    <!-- Payout Tracker Banner -->
+    <div class="payout-banner">
+        <div class="banner-label">ယခုတစ်ခေါက် မဲထုတ်ယူမည့်သူ</div>
+        <div class="current-turn-name" id="payout-target-display">Loading...</div>
+        <div class="payout-meta">
+            <div>အလှည့်ကျငွေ: <b>၁,၂၅၀,၀၀၀ MMK</b></div>
+            <div>ကာလ: <b>၁၀ ရက်တစ်ကြိမ်</b></div>
+        </div>
+    </div>
+
+    <!-- Payout Progress Timeline Summary -->
+    <div class="summary-title">📊 မဲရရှိမှု ဖြစ်စဉ် စာရင်းချုပ်</div>
+    <div class="grid-stats">
+        <div class="stat-box">
+            <span>ပိုက်ဆံထုတ်ယူပြီးသူ</span>
+            <div class="num" id="stat-payout-done" style="color: var(--emerald);">0 ဦး</div>
+        </div>
+        <div class="stat-box">
+            <span>ထုတ်ယူရန် ကျန်ရှိသူ</span>
+            <div class="num" id="stat-payout-rem" style="color: var(--primary-light);">0 ဦး</div>
+        </div>
+    </div>
+
+    <!-- Today's Collection Analytics Grid -->
+    <div class="summary-title">💰 ယနေ့ငွေကောက်ခံမှု အခြေအနေ</div>
+    <div class="grid-stats">
+        <div class="stat-box">
+            <span>ယနေ့ ကောက်ခံရရှိငွေ</span>
+            <div class="num" id="stat-money">0 MMK</div>
+        </div>
+        <div class="stat-box">
+            <span>ငွေသွင်းရန် ကျန်ရှိသူ</span>
+            <div class="num" id="stat-rem-count" style="color: var(--rose);">0 ဦး</div>
+        </div>
+    </div>
+
+    <!-- Live Collection Progress Flow -->
+    <div class="progress-card">
+        <div class="progress-meta">
+            <span>ယနေ့ Ngweဝင်ရောက်မှု နှုန်းပြဘား</span>
+            <span id="stat-ratio" style="color: var(--text-main);">0 / 25</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" id="stat-bar"></div></div>
+    </div>
+
+    <!-- Search Engine Input -->
+    <input type="text" class="search-input" id="search-box" placeholder="အဖွဲ့ဝင်အမည်ဖြင့် ရှာဖွေရန်..." oninput="drawSystem()">
+
+    <!-- ACTIVE & PENDING MEMBERS SECTION -->
+    <div class="section-header">လက်ရှိသံသရာနှင့် စောင့်ဆိုင်းစာရင်း</div>
+    <div class="grid-flow" id="grid-pipeline"></div>
+
+    <!-- 10-DAY PAYOUT COMPLETED SECTION -->
+    <div class="accordion-wrapper">
+        <button class="accordion-btn" onclick="toggleAccordion()">
+            <span>🎉 ၁၀ ရက်ပြည့် ပိုက်ဆံထုတ်ယူပြီးသားသူများ</span>
+            <span id="accordion-icon">🔽</span>
+        </button>
+        <div class="accordion-content" id="completed-accordion-content"></div>
+    </div>
+
+</div>
+
+<script>
+    const ADMIN_PASSHASH = "1234"; 
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+    let isAuthenticated = false;
+    let isAccordionOpen = false;
+
+    const pastelColors = ["#6366f1", "#0ea5e9", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#f43f5e", "#14b8a6", "#06b6d4", "#a855f7"];
+
+    let db = [
+        { turn: 1, name: "ဦးမောင်မောင်", phone: "09-11111111", paid: true, payout: "done" },
+        { turn: 2, name: "ဒေါ်လှလှ", phone: "09-22222222", paid: true, payout: "done" }, 
+        { turn: 3, name: "ကိုအောင်", phone: "09-33333333", paid: true, payout: "active" }, 
+        { turn: 4, name: "မစုစု", phone: "09-44444444", paid: false, payout: "pending" },
+        { turn: 5, name: "ဦးမြ", phone: "09-55555555", paid: false, payout: "pending" },
+        { turn: 6, name: "ဒေါ်နီ", phone: "09-66666666", paid: false, payout: "pending" },
+        { turn: 7, name: "ကိုကျော်", phone: "09-77777777", paid: false, payout: "pending" },
+        { turn: 8, name: "မသီတာ", phone: "09-88888888", paid: false, payout: "pending" },
+        { turn: 9, name: "ဦးစိုး", phone: "09-99999999", paid: false, payout: "pending" },
+        { turn: 10, name: "ဒေါ်မြတ်", phone: "09-10101010", paid: false, payout: "pending" },
+        { turn: 11, name: "ကိုမင်း", phone: "09-12345678", paid: false, payout: "pending" },
+        { turn: 12, name: "မေမေ", phone: "09-87654321", paid: false, payout: "pending" },
+        { turn: 13, name: "ဦးလူလူ", phone: "09-11223344", paid: false, payout: "pending" },
+        { turn: 14, name: "ဒေါ်ဝင်း", phone: "09-44332211", paid: false, payout: "pending" },
+        { turn: 15, name: "ကိုနိုင်", phone: "09-55667788", paid: false, payout: "pending" },
+        { turn: 16, name: "မအေး", phone: "09-88776655", paid: false, payout: "pending" },
+        { turn: 17, name: "ဦးတင်", phone: "09-99112233", paid: false, payout: "pending" },
+        { turn: 18, name: "ဒေါ်စန်း", phone: "09-33221199", paid: false, payout: "pending" },
+        { turn: 19, name: "ကိုလင်း", phone: "09-77889900", paid: false, payout: "pending" },
+        { turn: 20, name: "မထွေး", phone: "09-00998877", paid: false, payout: "pending" },
+        { turn: 21, name: "ဦးထွန်း", phone: "09-55443322", paid: false, payout: "pending" },
+        { turn: 22, name: "ဒေါ်အေး", phone: "09-22334455", paid: false, payout: "pending" },
+        { turn: 23, name: "ကိုဆန်း", phone: "09-66778899", paid: false, payout: "pending" },
+        { turn: 24, name: "မကြည်", phone: "09-99887766", paid: false, payout: "pending" },
+        { turn: 25, name: "ကိုဇော်", phone: "09-12398745", paid: false, payout: "pending" }
+    ];
+
+    // 🔒 WebAuthn & Password Hybrid Security Core
+    async function handleLogoClick() {
+        if (isAuthenticated) return;
+        logoClickCount++;
+        
+        clearTimeout(logoClickTimer);
+        logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 1000);
+
+        if (logoClickCount === 3) {
+            logoClickCount = 0;
+
+            // 1. စက်ထဲမှာ လက်ဗွေမှတ်သားထားပြီးသား ရှိမရှိ စစ်ဆေးခြင်း
+            if (localStorage.getItem("biometric_setup") === "true" && window.PublicKeyCredential) {
+                popToast("☝️ Fingerprint သို့မဟုတ် Face ID ဖတ်ပေးပါ...");
+                try {
+                    // Fingerprint Popup ခေါ်ယူခြင်း
+                    await navigator.credentials.get({
+                        publicKey: {
+                            challenge: new Uint8Array([1, 2, 3, 4]),
+                            allowCredentials: [],
+                            userVerification: "required",
+                            timeout: 60000
+                        }
+                    });
+                    loginSuccess("Fingerprint");
+                } catch (e) {
+                    popToast("❌ Biometric မှားယွင်းခြင်း သို့မဟုတ် ပယ်ဖျက်လိုက်ခြင်း။");
+                }
+            } else {
+                // 2. ပထမဆုံးအကြိမ် Setup လုပ်ခြင်း (သို့) WebAuthn အလုပ်မလုပ်ပါက Password သုံးခြင်း
+                let pwd = prompt("ဒိုင်စနစ် ပထမဆုံးအကြိမ် Setup ပြုလုပ်ရန် စကားဝှက် (1234) ရိုက်ပါ:");
+                if (pwd === ADMIN_PASSHASH) {
+                    if (window.PublicKeyCredential && confirm("✨ နောက်တစ်ကြိမ်ကျရင် Password ရိုက်စရာမလိုဘဲ Fingerprint နဲ့ ဝင်မလား?")) {
+                        try {
+                            await navigator.credentials.create({
+                                publicKey: {
+                                    challenge: new Uint8Array([1, 2, 3, 4]),
+                                    rp: { name: "ROSCA App" },
+                                    user: { id: new Uint8Array([1]), name: "admin", displayName: "Admin" },
+                                    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                                    timeout: 60000,
+                                    userVerification: "required"
+                                }
+                            });
+                            localStorage.setItem("biometric_setup", "true");
+                            loginSuccess("Password & Fingerprint Configured");
+                        } catch (e) {
+                            loginSuccess("Password Only (Biometric Skip)");
+                        }
+                    } else {
+                        loginSuccess("Password");
+                    }
+                } else if (pwd !== null) {
+                    popToast("❌ လုံခြုံရေးစကားဝှက် မှားယွင်းနေပါသည်။");
+                }
+            }
+        }
+    }
+
+    function loginSuccess(method) {
+        isAuthenticated = true;
+        const tag = document.getElementById("admin-tag");
+        tag.innerText = "🔓 Admin Mode";
+        tag.classList.add("on");
+        popToast(`🔓 Admin Access Granted via ${method}.`);
+        drawSystem();
+    }
+
+    function logoutAdmin() {
+        if (!isAuthenticated) return;
+        isAuthenticated = false;
+        const tag = document.getElementById("admin-tag");
+        tag.innerText = "🔒 Member Mode";
+        tag.classList.remove("on");
+        popToast("🔒 Admin Mode ပိတ်လိုက်ပါပြီ။");
+        drawSystem();
+    }
+
+    function toggleAccordion() {
+        isAccordionOpen = !isAccordionOpen;
+        const content = document.getElementById("completed-accordion-content");
+        const icon = document.getElementById("accordion-icon");
+        if(isAccordionOpen) {
+            content.classList.add("open");
+            icon.innerText = "🔼";
+        } else {
+            content.classList.remove("open");
+            icon.innerText = "🔽";
+        }
+    }
+
+    function anonymizeText(str, type) {
+        if(type === 'name') {
+            let parts = str.split(" ");
+            return parts.map(p => p.charAt(0) + "**").join(" ");
+        } else {
+            return str.substring(0, 5) + "****" + str.substring(str.length - 2);
+        }
+    }
+
+    function togglePaymentStatus(idx) {
+        if(!isAuthenticated) return;
+        let m = db[idx];
+        let actionStr = m.paid ? "ငွေမသွင်းရသေးသူအဖြစ် ပြောင်းလဲ" : "ငွေသွင်းပြီးကြောင်း သတ်မှတ်";
+        if(confirm(`⚠️ စာရင်းအမှားအယွင်းမရှိစေရန် - အလှည့် (${m.turn}) ${m.name} အား "${actionStr}" ရန် သေချာပါသလား?`)) {
+            db[idx].paid = !db[idx].paid;
+            drawSystem();
+        }
+    }
+
+    function popToast(msg) {
+        const t = document.getElementById("alert-toast");
+        t.innerText = msg;
+        t.classList.add("pop");
+        setTimeout(() => t.classList.remove("pop"), 3000);
+    }
+
+    function drawSystem() {
+        const gridPipeline = document.getElementById("grid-pipeline");
+        const accordionContent = document.getElementById("completed-accordion-content");
+        const query = document.getElementById("search-box").value.toLowerCase();
+        
+        gridPipeline.innerHTML = "";
+        accordionContent.innerHTML = "";
+
+        let paidCount = 0;
+        let payoutDoneCount = 0;
+        let activePayoutUser = "သတ်မှတ်မထားပါ";
+
+        let activeUserObj = db.find(m => m.payout === 'active');
+        if(activeUserObj) { activePayoutUser = `အလှည့် (${activeUserObj.turn}) - ${activeUserObj.name}`; }
+        document.getElementById("payout-target-display").innerText = activePayoutUser;
+
+        db.forEach((member, index) => {
+            if(member.paid) paidCount++;
+            if(member.payout === 'done') payoutDoneCount++;
+
+            let shouldAnonymize = !isAuthenticated && !member.paid;
+            let displayName = shouldAnonymize ? anonymizeText(member.name, 'name') : member.name;
+
+            if(query && !member.name.toLowerCase().includes(query)) return;
+
+            let colorIndex = member.turn % pastelColors.length;
+            let chosenColor = pastelColors[colorIndex];
+            let avatarUI = shouldAnonymize 
+                ? `<div class="avatar" style="background: #cbd5e1; color: #64748b;">🔒</div>`
+                : `<div class="avatar" style="background: ${chosenColor};">${member.name.replace("ဦး","").replace("ဒေါ်","").replace("ကို","").replace("မ","").charAt(0)}</div>`;
+
+            if(member.payout === 'done') {
+                const row = document.createElement("div");
+                row.className = "row-item";
+                row.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: var(--text-muted); font-weight: 700; width: 16px;">${member.turn}</span>
+                        ${avatarUI}
+                        <span style="font-weight: 600;">${displayName}</span>
+                    </div>
+                    <span style="color: var(--emerald); font-weight: 700; font-size: 11px;">🎉 ထုတ်ပြီး</span>
+                `;
+                accordionContent.appendChild(row);
+            } else {
+                let statusText = member.paid 
+                    ? `<span class="status-text success">✅ ငွေသွင်းပြီး</span>` 
+                    : `<span class="status-text waiting">⏳ စောင့်ဆိုင်းဆဲ</span>`;
+
+                let controlUI = isAuthenticated 
+                    ? `<div class="mini-switch ${member.paid ? 'checked' : ''}" onclick="togglePaymentStatus(${index})"></div>`
+                    : statusText;
+
+                const card = document.createElement("div");
+                card.className = `grid-item ${shouldAnonymize ? 'anon-mode' : ''} ${member.payout === 'active' ? 'is-active-turn' : ''}`;
+                card.innerHTML = `
+                    <div class="member-profile">
+                        ${avatarUI}
+                        <div class="member-info">
+                            <h3 style="${shouldAnonymize ? 'color: var(--text-muted); font-style: italic; font-weight: 500;' : ''}">
+                                ${member.payout === 'active' ? '👑 ' : ''}${displayName}
+                            </h3>
+                            <p>နံပါတ် - ${member.turn}</p>
+                        </div>
+                    </div>
+                    <div class="status-container">
+                        ${isAuthenticated ? statusText : ''}
+                        ${controlUI}
+                    </div>
+                `;
+                gridPipeline.appendChild(card);
+            }
+        });
+
+        let remCount = 25 - paidCount;
+        let collectedMoney = paidCount * 5000;
+        let payoutRemCount = 25 - payoutDoneCount;
+
+        document.getElementById("stat-payout-done").innerText = payoutDoneCount + " ဦး";
+        document.getElementById("stat-payout-rem").innerText = payoutRemCount + " ဦး";
+        document.getElementById("stat-money").innerText = collectedMoney.toLocaleString() + " MMK";
+        document.getElementById("stat-rem-count").innerText = remCount + " ဦး";
+        document.getElementById("stat-ratio").innerText = `${paidCount} / ၂၅ ဦး`;
+        document.getElementById("stat-bar").style.width = ((paidCount / 25) * 100) + "%";
+    }
+
+    drawSystem();
+</script>
+</body>
+</html>
