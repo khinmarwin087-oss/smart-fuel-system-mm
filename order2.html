@@ -120,6 +120,8 @@
                     <input type="text" id="in-name" placeholder="အမည်ဖြည့်ပါ">
                     <label>📞 ဖုန်းနံပါတ်</label>
                     <input type="tel" id="in-phone" placeholder="၀၉...">
+                    <label><i class="fa-brands fa-telegram" style="color: #24A1DE;"></i> Telegram Chat ID နံပါတ်</label>
+                    <input type="number" id="in-phone" placeholder="သင့် Telegram Chat ID ကို ရိုက်ထည့်ပါ">
                     <label>📅 ရက်စွဲ</label>
                     <div class="date-choices">
                         <div class="date-chip active" id="chip-today" onclick="selectDate('today')">ဒီနေ့</div>
@@ -265,6 +267,9 @@
         document.getElementById('form-box').style.display = 'block'; 
         document.getElementById('next-btn').style.display = 'none'; 
         document.getElementById('modal-title').innerText = "အချက်အလက်ဖြည့်ပါ"; 
+
+         // 🌟 ဒီစာသားလေးကို အသစ်ညှပ်ထည့်ပေးပါ
+        document.getElementById('in-phone').placeholder = "သင့် Telegram Chat ID နံပါတ် ရိုက်ထည့်ပါ";
         
         // Back ခလုတ်နှိပ်ရင် Form ပြန်ပိတ်ပြီး Cart list ကိုပဲ မြင်ရအောင် ပြန်လုပ်ပေးမယ်
         document.getElementById('modal-back').onclick = () => {
