@@ -2,9 +2,6 @@
 <html lang="my">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6N321JW2GM"></script>
-    <!-- Arabic Font လှလှလေး ချိတ်ဆက်ခြင်း -->
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
-    
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -15,7 +12,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🍗 မြင်သာကြက်ကင် POS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Fonts ချိတ်ဆက်မှု (Google Fonts စနစ်တကျ စုစည်းထားခြင်း) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -264,10 +265,10 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 </head>
 <body>
     <div class="top-nav">
-    <div class="brand-area" style="align-items: flex-start;">
+        <div class="brand-area" style="align-items: flex-start;">
         <div style="display: flex; flex-direction: column;">
             <h2 class="brand-title">
-                <i class="fa-solid fa-drumstick-bite"></i> မြင်သာကြက်ကင်
+                <i class="fa-solid fa-moon"></i> မြင်သာကြက်ကင်
             </h2>
             <div>
                 <span class="halal-badge">حلال | Halal ✨</span>
@@ -276,7 +277,8 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
         <button class="btn-history-top" onclick="viewOrderHistory()" style="margin-top: 4px;">
             <i class="fa-solid fa-clock-rotate-left"></i> မှတ်တမ်း
         </button>
-    </div>
+        </div>
+        
     
     <div class="search-container">
         <div class="search-box">
@@ -424,6 +426,7 @@ function renderMenu() {
             </div>
         </div>`).join('');
 }
+    
     
 
 function checkSearchInput() {
