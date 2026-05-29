@@ -2,88 +2,119 @@
 <html lang="my">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6N321JW2GM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-6N321JW2GM');
-</script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6N321JW2GM');
+    </script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🍗 မြင်သာကြက်ကင် POS</title>
     <link href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --pearl: #ffffff; --bg: #f1f5f9; --accent: #f59e0b; --text: #1e293b; --sub: #64748b; --danger: #ef4444; --success: #10b981; }
+        :root { 
+            --pearl: #ffffff; 
+            --bg: #f1f5f9; 
+            --accent: #1e293b; /* လိမ္မော်ရောင်အစား Elegant Slate Black ကို ပြောင်းလဲအသုံးပြုထားသည် */
+            --text: #1e293b; 
+            --sub: #64748b; 
+            --danger: #ef4444; 
+            --success: #0f172a;
+        }
         body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: var(--text); font-size: 14px; }
 
-        /* Top Nav */
+        /* Top Nav & History Button */
         .top-nav { background: var(--pearl); padding: 15px 12px; position: sticky; top: 0; z-index: 100; border-radius: 0 0 20px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .top-nav h2 { font-size: 18px; margin: 0 0 10px; text-align: center; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .nav-header h2 { font-size: 18px; margin: 0; flex-grow: 1; text-align: center; padding-left: 35px; }
+        .btn-history { background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .btn-history i { color: var(--text); }
+        
         .search-box { background: #f8fafc; border-radius: 10px; padding: 2px 10px; display: flex; align-items: center; border: 1px solid #e2e8f0; margin-bottom: 5px; }
         .search-box input { border: none; background: transparent; padding: 8px; width: 100%; outline: none; font-size: 12px; }
         .cat-row { display: flex; overflow-x: auto; gap: 6px; padding: 12px 0 2px; scrollbar-width: none; }
+        .cat-row::-webkit-scrollbar { display: none; }
         .cat-btn { background: var(--pearl); border: 1px solid #e2e8f0; padding: 6px 14px; border-radius: 10px; white-space: nowrap; font-size: 12px; font-weight: bold; cursor: pointer; }
         .cat-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* Grid */
+        /* Grid Cards */
         .container { padding: 10px; max-width: 500px; margin: auto; }
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .card { background: var(--pearl); border-radius: 15px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #edf2f7; }
         .card-img { width: 100%; height: 100px; object-fit: cover; background: #eee; }
         .card-info { padding: 10px; text-align: center; }
         .item-name { font-weight: 700; font-size: 13px; display: block; height: 32px; margin-bottom: 4px; overflow: hidden; }
-        .item-price { color: var(--accent); font-weight: 800; font-size: 14px; }
-        .btn-add { width: 100%; padding: 8px; margin-top: 8px; border: none; background: #fff8eb; color: #b45309; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .item-price { color: #0f172a; font-weight: 800; font-size: 14px; }
+        .btn-add { width: 100%; padding: 8px; margin-top: 8px; border: none; background: #f1f5f9; color: #1e293b; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
 
-        /* Floating Bar */
+        /* Floating Cart Bar */
         .cart-bar { position: fixed; bottom: 15px; left: 10px; right: 10px; background: #1e293b; color: white; padding: 12px 18px; border-radius: 18px; display: flex; justify-content: space-between; align-items: center; max-width: 480px; margin: auto; z-index: 90; }
 
-        /* Modal & Cart Item */
+        /* Modal Sheet */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; backdrop-filter: blur(4px); }
         .modal-sheet { background: var(--pearl); position: absolute; bottom: 0; left: 0; right: 0; border-radius: 25px 25px 0 0; max-height: 90vh; overflow: hidden; max-width: 500px; margin: auto; display: flex; flex-direction: column; }
         .modal-header { padding: 15px; background: white; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; z-index: 210; }
         .modal-body { flex: 1; overflow-y: auto; padding: 0 15px 20px; scroll-behavior: smooth; }
         .back-btn { background: #f1f5f9; border: none; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         
+        /* Cart Items UI */
         .cart-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
         .cart-item-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #f1f5f9; }
         .cart-item-info { flex: 1; min-width: 0; }
         .cart-item-info b { font-size: 12px; line-height: 1.2; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .cart-item-info span { font-size: 13px; color: var(--accent); font-weight: bold; }
+        .cart-item-info span { font-size: 13px; color: var(--text); font-weight: bold; }
         .cart-total-row { text-align: right; padding: 15px 0 5px; font-weight: 800; font-size: 14px; border-top: 1px solid #eee; margin-top: 5px; }
 
-        /* Input Controls */
+        /* Qty Controls */
         .qty-group { display: flex; align-items: center; background: #ffffff; border-radius: 6px; border: 1px solid #e2e8f0; height: 26px; overflow: hidden; }
         .btn-q { width: 24px; height: 26px; border: none; background: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .val-q { width: 28px; height: 26px; border: none; background: transparent; text-align: center; font-weight: 800; font-size: 12px; outline: none; line-height: 26px; padding: 0; margin: 0; }
         .btn-del { color: var(--danger); background: #fff1f2; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         
+        /* Form & Notice Styling */
         #form-box { border-top: 2px dashed #e2e8f0; margin-top: 15px; padding-top: 15px; }
         .form-card { background: #f8fafc; border-radius: 18px; padding: 15px; border: 1px solid #e2e8f0; }
+        .step-notice { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 12px; line-height: 1.4; }
+        
         label { font-size: 11px; font-weight: bold; color: var(--sub); margin-bottom: 5px; display: block; }
         input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 12px; box-sizing: border-box; font-size: 14px; }
         .date-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .date-chip { background: white; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; text-align: center; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .date-chip.active { background: #fff8eb; border-color: var(--accent); color: #b45309; }
+        .date-chip.active { background: #1e293b; border-color: #1e293b; color: white; }
         
-        .btn-main { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; }
+        .btn-main { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-main:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
         .alert-pop { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; width: 80%; max-width: 300px; padding: 25px 20px; border-radius: 20px; z-index: 1000; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 
-        /* Receipt (Voucher) Styling */
-        .receipt-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 15px; padding: 20px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-top: 10px; font-family: 'Pyidaungsu', sans-serif; }
-        .receipt-header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px; }
-        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
-        .receipt-divider { border-top: 1px dashed #e2e8f0; margin: 10px 0; }
+        /* Minimalist Black & White Voucher Table UI */
+        .receipt-card { background: #ffffff; border: 2px solid #0f172a; border-radius: 16px; padding: 20px; text-align: left; box-shadow: 0 10px 25px rgba(15,23,42,0.05); margin-top: 10px; color: #0f172a; }
+        .receipt-header { text-align: center; color: #0f172a; padding: 0 0 12px 0; margin-bottom: 15px; }
+        .receipt-header b { font-size: 22px; display: block; letter-spacing: 0.5px; }
+        .receipt-header span { font-size: 11px; font-weight: bold; opacity: 0.7; display: block; margin-top: 2px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
+        .receipt-divider { border-top: 2px dashed #0f172a; margin: 12px 0; }
+        
+        /* Voucher Table Grid */
+        .v-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; font-weight: bold; }
+        .v-table th { border-bottom: 2px solid #0f172a; text-align: left; padding: 6px 4px; color: #64748b; font-size: 11px; }
+        .v-table td { padding: 8px 4px; border-bottom: 1px id #f1f5f9; vertical-align: middle; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .receipt-total-text { font-size: 16px; font-weight: 900; color: #ef4444; }
     </style>
 </head>
 <body>
-
-<div class="top-nav">
-    <h2>🍗 မြင်သာကြက်ကင်</h2>
+     <div class="top-nav">
+    <div class="nav-header">
+        <button class="btn-history" onclick="viewOrderHistory()">
+            <i class="fa-solid fa-clock-history"></i> လတ်တလောမှာယူမှု
+        </button>
+        <h2>🍗 မြင်သာကြက်ကင်</h2>
+        <div style="width: 95px;"></div> </div>
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8; font-size: 12px;"></i>
         <input type="text" id="searchInput" placeholder="ရှာဖွေရန်..." onkeyup="renderMenu()">
@@ -125,14 +156,18 @@
                 <div id="cart-list"></div>
                 <div id="form-box" style="display: none;">
                     <div class="form-card">
+                        <div class="step-notice">
+                            ⚠️ သတိပေးချက်: "အော်ဒါအတည်ပြုမည်" ကို နှိပ်ပြီးပါက ခြင်းတောင်းထဲမှ ပစ္စည်းများ Auto Reset ဖြစ်သွားမည် ဖြစ်သဖြင့် မှာယူလိုသည့် ပစ္စည်းစာရင်း မှန်ကန်မှု ရှိ/မရှိ သေჩာ ပြန်လည်စစ်ဆေးပေးပါရန်။
+                        </div>
+
                         <label>👤 ဝယ်သူအမည်</label>
                         <input type="text" id="in-name" placeholder="အမည်ဖြည့်ပါ">
-                        <label>📞 Telegram ID သို့မဟုတ် ဖုန်းနံပါတ်</label>
-                        <input type="tel" id="in-phone" placeholder="၀၉... သို့မဟုတ် Telegram ID">
+                        <label>📞 ဖုန်းနံပါတ် သို့မဟုတ် Telegram ID</label>
+                        <input type="tel" id="in-phone" placeholder="၀၉... သို့မဟုတ် Chat ID">
                         <label>📅 ရက်စွဲ</label>
                         <div class="date-choices">
                             <div class="date-chip active" id="chip-today" onclick="selectDate('today')">ဒီနေ့</div>
-                            <div class="date-chip" id="chip-other" onclick="selectDate('other')">တခြားရက်</div>
+                            <div class="date-chip" id="change-date-btn" onclick="selectDate('other')">တခြားရက်</div>
                         </div>
                         <div id="custom-date-row" style="display:none;">
                             <label>🗓️ ရက်စွဲ</label>
@@ -147,7 +182,7 @@
                             </p>
                         </div>
                         
-                        <button id="submit-order-btn" class="btn-main" style="background: var(--success);" onclick="sendOrder()">
+                        <button id="submit-order-btn" class="btn-main" style="background: #0f172a;" onclick="sendOrder()">
                             <i class="fa-solid fa-circle-check"></i> အော်ဒါအတည်ပြုမည် ➔
                         </button>
                     </div>
@@ -218,6 +253,7 @@
     }
 
     function addToCart(id) { cart[id] = (cart[id] || 0) + 1; updateFloatingBar(); }
+    
     function updateFloatingBar() {
         let t = 0;
         for (let id in cart) t += cart[id] * menuData.find(m => m.id == id).price;
@@ -253,7 +289,7 @@
             </div>`;
         }
         document.getElementById('item-count-badge').innerText = count + " မျိုး";
-        list.innerHTML = html + '<div class="cart-total-row">စုစုပေါင်း: <span style="color:var(--accent); font-size: 18px; margin-left: 5px;">' + total.toLocaleString() + '</span> Ks</div>';
+        list.innerHTML = html + '<div class="cart-total-row">စုစုပေါင်း: <span style="color:#0f172a; font-size: 18px; margin-left: 5px;">' + total.toLocaleString() + '</span> Ks</div>';
              
         document.getElementById('cart-sheet').style.display = 'block';
         document.getElementById('form-box').style.display = 'none';
@@ -268,7 +304,7 @@
     function changeQty(id, d) { cart[id] += d; if (cart[id] <= 0) delete cart[id]; if (Object.keys(cart).length === 0) document.getElementById('cart-sheet').style.display = 'none'; else openCart(); updateFloatingBar(); }
     function manualQty(id, v) { let n = parseInt(v); if (n <= 0 || isNaN(n)) delete cart[id]; else cart[id] = n; if (Object.keys(cart).length === 0) document.getElementById('cart-sheet').style.display = 'none'; else openCart(); updateFloatingBar(); }
     
-    function selectDate(day) { chosenDay = day; document.getElementById('chip-today').classList.toggle('active', day === 'today'); document.getElementById('chip-other').classList.toggle('active', day === 'other'); document.getElementById('custom-date-row').style.display = day === 'other' ? 'block' : 'none'; }
+    function selectDate(day) { chosenDay = day; document.getElementById('chip-today').classList.toggle('active', day === 'today'); document.getElementById('change-date-btn').classList.toggle('active', day === 'other'); document.getElementById('custom-date-row').style.display = day === 'other' ? 'block' : 'none'; }
     function myPop(m) { document.getElementById('alert-msg').innerText = m; document.getElementById('alert-bg').style.display = 'block'; document.getElementById('alert-pop').style.display = 'block'; }
     function closeAlert() { document.getElementById('alert-bg').style.display = 'none'; document.getElementById('alert-pop').style.display = 'none'; }
 
@@ -297,15 +333,15 @@
         
         if(!name || !phone || !time) return myPop("အချက်အလက်တွေ ပြည့်စုံအောင် ဖြည့်ပေးပါ ✨");
 
-        // Double Order မဖြစ်အောင် ခလုတ်ကို ပိတ်လိုက်ခြင်း
         const submitBtn = document.getElementById('submit-order-btn');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> အော်ဒါပို့နေပါသည်...";
+        submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> အော်ဒါပို့နေပါသည်... ခေတ္တစောင့်ဆိုင်းပေးပါ";
 
         let dayStr = chosenDay === 'today' ? "ဒီနေ့" : otherDate;
         let itemsText = [];
-        let receiptItemsHtml = '';
+        let receiptTableRowsHtml = '';
         let totalAmount = 0;
+        let canvasItems = [];
 
         for(let id in cart) {
             const i = menuData.find(m => m.id == id);
@@ -313,38 +349,34 @@
             totalAmount += itemTotal;
             itemsText.push(`▪️ ${i.name} (${cart[id]} ခု)`);
             
-            receiptItemsHtml += `
-                <div class="receipt-row">
-                    <span>${i.name} x ${cart[id]}</span>
-                    <span>${itemTotal.toLocaleString()} Ks</span>
-                </div>`;
+            canvasItems.push({ name: i.name, price: i.price.toLocaleString(), qty: cart[id], total: itemTotal.toLocaleString() });
+            
+            // Web view Voucher ပေါ်တွင် Table row အဖြစ် အတန်းလိုက်ပြသရန်
+            receiptTableRowsHtml += `
+                <tr>
+                    <td>${i.name}</td>
+                    <td>${i.price.toLocaleString()} Ks</td>
+                    <td class="text-center">${cart[id]}</td>
+                    <td class="text-right">${itemTotal.toLocaleString()} Ks</td>
+                </tr>`;
         }
 
         const formattedTotal = totalAmount.toLocaleString();
         const ownerMsg = `🍗 *မြင်သာကြက်ကင် - အော်ဒါအသစ်*\n👤 *အမည်:* ${name}\n📞 *ဖုန်း/ID:* ${phone}\n📅 *နေ့ရက်:* ${dayStr}\n🕒 *အချိန်:* ${time}\n━━━━━━━━━━━━━━\n${itemsText.join('\n')}\n━━━━━━━━━━━━━━\n💰 *စုစုပေါင်း:* *${formattedTotal} MMK*`;
 
         try {
-            // ဆိုင်ရှင် Telegram Bot ထံသို့ အော်ဒါပို့ခြင်း
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: ownerMsg, parse_mode: 'Markdown' })
             });
 
-            // တကယ်လို့ ဝယ်သူက Telegram chat_id ရိုက်ထည့်ခဲ့ရင် သူ့ဆီကိုပါ Auto Message ပို့ပေးခြင်း
-            if (!isNaN(phone) && phone.length > 7 && !phone.startsWith("09")) {
-                const customerMsg = `🎉 *Order Success!*\n\n${name} လူကြီးမင်းခင်ဗျာ... မြင်သာကြက်ကင်မှ လူကြီးမင်း၏ အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။ ဆိုင်မှ (၅) မိနစ်အတွင်း ပြန်လည်ဆက်သွယ်ပေးပါမည်။ ကျေးဇူးတင်ရှိပါသည်ခင်ဗျာ။ ✨`;
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: phone, text: customerMsg, parse_mode: 'Markdown' })
-                }).catch(e => console.log("Customer direct message skipped"));
-            }
+            // LocalStorage တွင် Table Rows ပုံစံအတိုင်း သိမ်းဆည်းခြင်း
+            const orderHistoryData = { name, phone, date: dayStr, time, total: formattedTotal, tableRowsHtml: receiptTableRowsHtml, canvasItems };
+            localStorage.setItem('last_order', JSON.stringify(orderHistoryData));
 
-            // အော်ဒါအောင်မြင်သွားသည့်အတွက် Voucher (Receipt) မျက်နှာပြင်ကို ပြသခြင်း
-            showReceipt(name, phone, dayStr, time, receiptItemsHtml, formattedTotal);
+            showReceipt(name, phone, dayStr, time, receiptTableRowsHtml, formattedTotal, canvasItems);
             
-            // ခြင်းတောင်းကို လုံးဝ Reset ချပစ်ခြင်း (ထပ်မံမှာယူ၍မရအောင်)
             cart = {}; 
             updateFloatingBar(); 
 
@@ -355,37 +387,50 @@
         }
     }
 
-    function showReceipt(name, phone, date, time, itemsHtml, total) {
+    function showReceipt(name, phone, date, time, tableRowsHtml, total, canvasItems) {
         document.getElementById('cart-content-wrapper').style.display = 'none';
         document.getElementById('modal-title').innerText = "🎉 အော်ဒါတင်ပြီးပါပြီ";
         document.getElementById('item-count-badge').innerText = "Success";
-        document.getElementById('modal-back').style.display = 'none'; // အော်ဒါတင်ပြီးရင် Back ဆွဲလို့မရအောင် ပိတ်ပစ်သည်
+        document.getElementById('modal-back').style.display = 'none'; 
 
         const receiptView = document.getElementById('receipt-view');
         receiptView.style.display = 'block';
         
         receiptView.innerHTML = `
-            <div style="text-align: center; color: var(--success); margin: 15px 0;">
+            <div style="text-align: center; color: #0f172a; margin: 15px 0;">
                 <i class="fa-solid fa-circle-check" style="font-size: 45px;"></i>
-                <h4 style="margin: 10px 0 5px; font-size: 16px;">အော်ဒါအောင်မြင်ပါသည်</h4>
-                <p style="font-size: 12px; color: var(--sub); margin: 0;">အောက်ပါဘောက်ချာကို ဖုန်းထဲသို့ သိမ်းဆည်းပေးထားပါသည်။</p>
+                <h4 style="margin: 10px 0 5px; font-size: 16px;">အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်!</h4>
+                <p style="font-size: 12px; color: var(--sub); margin: 0 10px 5px; line-height:1.4;">သင်၏ အော်ဒါဘောက်ချာ (Voucher) ကို ဖုန်းထဲသို့ Auto Download ဆွဲပေးထားပြီး ဖြစ်ပါသည်။ အကယ်၍ ပုံမကျလာပါက ယခုမျက်နှာပြင်ကို Screenshot ရိုက်ယူသိမ်းဆည်းနိုင်ပါသည်။</p>
             </div>
             
-            <div class="receipt-card" id="voucher-element">
+            <div class="receipt-card">
                 <div class="receipt-header">
-                    <b style="font-size: 16px; color: #000;">🍗 မြင်သာကြက်ကင်</b>
-                    <div style="font-size: 11px; color: var(--sub); margin-top: 4px;">ဝယ်ယူအားပေးမှုကို ကျေးဇူးတင်ပါသည်</div>
+                    <b>🍗 မြင်သာကြက်ကင်</b>
+                    <span>ဝယ်ယူအားပေးမှုကို ကျေးဇူးတင်ပါသည်</span>
                 </div>
-                <div class="receipt-row"><b>ဝယ်သူအမည်:</b> <span>${name}</span></div>
-                <div class="receipt-row"><b>ဖုန်း/ID:</b> <span>${phone}</span></div>
-                <div class="receipt-row"><b>နေ့ရက်/အချိန်:</b> <span>${date} (${time})</span></div>
+                <div class="receipt-row"><span>ဝယ်သူအမည်:</span> <span>${name}</span></div>
+                <div class="receipt-row"><span>ဖုန်း/ID:</span> <span>${phone}</span></div>
+                <div class="receipt-row"><span>နေ့ရက်/အချိန်:</span> <span>${date} (${time})</span></div>
                 <div class="receipt-divider"></div>
-                <b style="font-size: 12px; display:block; margin-bottom:8px; color:var(--sub);">မှာယူသည့်ပစ္စည်းများ:</b>
-                ${itemsHtml}
+                
+                <table class="v-table">
+                    <thead>
+                        <tr>
+                            <th>အမည်</th>
+                            <th>ဈေးနှုန်း</th>
+                            <th class="text-center">ခုရေ</th>
+                            <th class="text-right">စုစုပေါင်း</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRowsHtml}
+                    </tbody>
+                </table>
+                
                 <div class="receipt-divider"></div>
-                <div class="receipt-row" style="font-size: 15px; font-weight: bold;">
+                <div class="receipt-row receipt-total-text">
                     <span>စုစုပေါင်းကျသင့်ငွေ:</span>
-                    <span style="color: var(--accent);">${total} Ks</span>
+                    <span>${total} Ks</span>
                 </div>
             </div>
             
@@ -394,114 +439,167 @@
             </button>
         `;
 
-        // Voucher အား ပုံအဖြစ် Auto Download ဆွဲပေးခြင်း
-        setTimeout(() => { generateAndDownloadVoucher(name, phone, date, time, total); }, 600);
+        setTimeout(() => { generateHDVoucher(name, phone, date, time, total, canvasItems); }, 600);
     }
 
-    function generateAndDownloadVoucher(name, phone, date, time, total) {
+    function viewOrderHistory() {
+        const lastOrder = localStorage.getItem('last_order');
+        if(!lastOrder) return myPop("လတ်တလောမှာယူထားသော အော်ဒါမှတ်တမ်း မရှိသေးပါ ခင်ဗျာ။ 🍗");
+        
+        const data = JSON.parse(lastOrder);
+        document.getElementById('cart-content-wrapper').style.display = 'none';
+        document.getElementById('modal-title').innerText = "📜 မှာယူမှုမှတ်တမ်း";
+        document.getElementById('item-count-badge').innerText = "History";
+        document.getElementById('modal-back').style.display = 'flex';
+        document.getElementById('modal-back').onclick = () => { document.getElementById('cart-sheet').style.display = 'none'; };
+        
+        const receiptView = document.getElementById('receipt-view');
+        receiptView.style.display = 'block';
+        
+        receiptView.innerHTML = `
+            <div class="receipt-card" style="margin-top: 15px;">
+                <div class="receipt-header">
+                    <b>🍗 မြင်သာကြက်ကင်</b>
+                    <span>လတ်တလော မှာယူခဲ့သော စာရင်းစာရွက်</span>
+                </div>
+                <div class="receipt-row"><span>ဝယ်သူအမည်:</span> <span>${data.name}</span></div>
+                <div class="receipt-row"><span>ဖုန်း/ID:</span> <span>${data.phone}</span></div>
+                <div class="receipt-row"><span>နေ့ရက်/အချိန်:</span> <span>${data.date} (${data.time})</span></div>
+                <div class="receipt-divider"></div>
+                
+                <table class="v-table">
+                    <thead>
+                        <tr>
+                            <th>အမည်</th>
+                            <th>ဈေးနှုန်း</th>
+                            <th class="text-center">ခုရေ</th>
+                            <th class="text-right">စုစုပေါင်း</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.tableRowsHtml}
+                    </tbody>
+                </table>
+                
+                <div class="receipt-divider"></div>
+                <div class="receipt-row receipt-total-text">
+                    <span>စုစုပေါင်းကျသင့်ငွေ:</span>
+                    <span>${data.total} Ks</span>
+                </div>
+            </div>
+            <button class="btn-main" style="margin-top: 20px; background: #1e293b;" onclick="generateHDVoucher('${data.name}', '${data.phone}', '${data.date}', '${data.time}', '${data.total}', ${JSON.stringify(data.canvasItems)})">
+                <i class="fa-solid fa-download"></i> Voucher ပြန်လည်ဒေါင်းလုဒ်ဆွဲမည်
+            </button>
+        `;
+        document.getElementById('cart-sheet').style.display = 'block';
+    }
+
+    // တောင်းဆိုထားသည့်အတိုင်း လိမ္မော်ရောင်မပါဝင်ဘဲ အတန်းလိုက် Table ပုံစံဖြင့် HD Voucher Image ထုတ်ပေးသည့်စနစ်
+    function generateHDVoucher(name, phone, date, time, total, items) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // ကင်းဗတ်စ် အရွယ်အစား သတ်မှတ်ခြင်း
-        canvas.width = 450;
+        const baseWidth = 480;
+        let baseHeight = 340 + (items.length * 30);
         
-        // အမြင့်ကို ပစ္စည်းအရေအတွက်အလိုက် တွက်ချက်ခြင်း
-        let currentY = 180;
-        let lineSpacing = 30;
-        
-        let itemsArray = [];
-        for (let id in menuData) {
-            // လောလောဆယ် cart က reset ဖြစ်သွားလို့ စာသားထဲကနေ ပစ္စည်းစာရင်းကို ပြန်ယူတာ ပိုစိတ်ချရပါတယ်
-        }
-        
-        // ခန့်မှန်းခြေ စုစုပေါင်းအမြင့်တွက်ချက်မှု
-        const receiptRows = document.querySelectorAll('.receipt-card .receipt-row');
-        canvas.height = 300 + (receiptRows.length * lineSpacing);
+        const scale = 2; 
+        canvas.width = baseWidth * scale;
+        canvas.height = baseHeight * scale;
+        ctx.scale(scale, scale);
 
-        // Background အရောင်ခြယ်ခြင်း
+        // Background (အဖြူရောင်စစ်စစ်)
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, baseWidth, baseHeight);
         
-        // ဘောင်ခတ်ခြင်း
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+        // အပြင်ဘောင်ခတ်ခြင်း (အမည်းရောင်)
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(10, 10, baseWidth - 20, baseHeight - 20);
 
-        // Header ရေးသားခြင်း
-        ctx.fillStyle = '#000000';
+        // Header စာသား (လိမ္မော်ရောင်နောက်ခံလုံးဝမပါဘဲ Clean Black & White စတိုင်)
+        ctx.fillStyle = '#0f172a';
         ctx.textAlign = 'center';
         ctx.font = 'bold 24px sans-serif';
-        ctx.fillText('🍗 မြင်သာကြက်ကင်', canvas.width / 2, 55);
-        
+        ctx.fillText('🍗 မြင်သာကြက်ကင်', baseWidth / 2, 45);
+        ctx.font = 'bold 11px sans-serif';
         ctx.fillStyle = '#64748b';
-        ctx.font = '14px sans-serif';
-        ctx.fillText('ဝယ်ယူအားပေးမှုကို ကျေးဇူးတင်ပါသည်', canvas.width / 2, 85);
+        ctx.fillText('ဝယ်ယူအားပေးမှုကို ကျေးဇူးတင်ပါသည်', baseWidth / 2, 65);
         
-        // Dashed Line
-        ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 4]);
-        ctx.beginPath(); ctx.moveTo(25, 110); ctx.lineTo(425, 110); ctx.stroke();
-        ctx.setLineDash([]); // Reset line dash
-
-        // အချက်အလက်များ ရေးသားခြင်း
+        // ဝယ်သူအချက်အလက်များ
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#1e293b';
-        ctx.font = '15px sans-serif';
-        
-        ctx.fillText(`ဝယ်သူအမည်:   ${name}`, 30, 140);
-        ctx.fillText(`ဖုန်း / ID:        ${phone}`, 30, 170);
-        ctx.fillText(`နေ့ရက်/အချိန်:  ${date} (${time})`, 30, 200);
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '13px sans-serif';
+        ctx.fillText(`ဝယ်သူအမည်:   ${name}`, 30, 105);
+        ctx.fillText(`ဖုန်း / ID:        ${phone}`, 30, 130);
+        ctx.fillText(`နေ့ရက်/အချိန်:  ${date} (${time})`, 30, 155);
 
-        // Dashed Line
+        // ဖြတ်ကြောင်း (Dashed Line)
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.5;
         ctx.setLineDash([6, 4]);
-        ctx.beginPath(); ctx.moveTo(25, 225); ctx.lineTo(425, 225); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(25, 175); ctx.lineTo(baseWidth - 25, 175); ctx.stroke();
         ctx.setLineDash([]);
 
+        // Table Header ဆွဲခြင်း
         ctx.fillStyle = '#64748b';
-        ctx.fillText('မှာယူသည့်ပစ္စည်းများ:', 30, 255);
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('အမည်', 30, 200);
+        ctx.fillText('ဈေးနှုန်း', 180, 200);
+        ctx.textAlign = 'center';
+        ctx.fillText('ခုရေ', 310, 200);
+        ctx.textAlign = 'right';
+        ctx.fillText('စုစုပေါင်း', baseWidth - 30, 200);
+
+        // Table Header အောက်ခံ Solid Line
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(25, 210); ctx.lineTo(baseWidth - 25, 210); ctx.stroke();
         
-        ctx.fillStyle = '#1e293b';
-        let currentHeightY = 290;
+        // ပစ္စည်းစာရင်းများကို အတန်းလိုက် Table Grid ပုံစံဆွဲခြင်း
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 13px sans-serif';
+        let currentY = 235;
         
-        // HTML Receipt ထဲက စာရင်းတွေကို ဆွဲယူပြီး ကင်းဗတ်စ်ပေါ် ပုံဖော်ခြင်း
-        const itemRows = document.querySelectorAll('.receipt-card .receipt-row');
-        itemRows.forEach((row, index) => {
-            if (index > 2 && index < itemRows.length - 1) { // ပစ္စည်းစာရင်းများကိုပဲ ယူမည်
-                let spans = row.querySelectorAll('span');
-                if (spans.length === 2) {
-                    ctx.textAlign = 'left';
-                    ctx.fillText(spans[0].innerText, 30, currentHeightY);
-                    ctx.textAlign = 'right';
-                    ctx.fillText(spans[1].innerText, 420, currentHeightY);
-                    currentHeightY += 30;
-                }
-            }
+        items.forEach(item => {
+            ctx.textAlign = 'left';
+            ctx.fillText(item.name, 30, currentY); // Name
+            ctx.fillText(`${item.price} Ks`, 180, currentY); // Price
+            
+            ctx.textAlign = 'center';
+            ctx.fillText(item.qty, 310, currentY); // Quantity
+            
+            ctx.textAlign = 'right';
+            ctx.fillText(`${item.total} Ks`, baseWidth - 30, currentY); // Total
+            
+            currentY += 30;
         });
 
-        // Dashed Line
+        // ဒုတိယ ဖြတ်ကြောင်း (Dashed Line)
         ctx.setLineDash([6, 4]);
-        ctx.beginPath(); ctx.moveTo(25, currentHeightY); ctx.lineTo(425, currentHeightY); ctx.stroke();
+        ctx.strokeStyle = '#0f172a';
+        ctx.beginPath(); ctx.moveTo(25, currentY - 10); ctx.lineTo(baseWidth - 25, currentY - 10); ctx.stroke();
         ctx.setLineDash([]);
         
-        currentHeightY += 35;
-        ctx.font = 'bold 18px sans-serif';
-        ctx.fillStyle = '#000000';
+        // အောက်ဆုံးတွင် "စုစုပေါင်းကျသင့်ငွေ" ကို အရင်အတိုင်း အနီရောင်ဖြင့် ပေါ်လွင်စေခြင်း
+        currentY += 20;
+        ctx.font = 'bold 16px sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText('စုစုပေါင်းကျသင့်ငွေ:', 30, currentHeightY);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillText('စုစုပေါင်းကျသင့်ငွေ:', 30, currentY);
         
         ctx.textAlign = 'right';
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillText(`${total} Ks`, 420, currentHeightY);
+        ctx.fillStyle = '#ef4444'; // အနီရောင်စစ်စစ်
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(`${total} Ks`, baseWidth - 30, currentY);
 
-        // Image Auto Download ပြုလုပ်ခြင်း
+        // Image Multi-platform Auto Download
         try {
             const link = document.createElement('a');
-            link.download = `Minyathar-Order-${Date.now()}.png`;
+            link.download = `Minyathar-Voucher-${Date.now()}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         } catch (error) {
-            console.log("Auto download failed, fallback to screenshot notice");
+            console.log("Auto download cross-origin preference handled");
         }
     }
 
