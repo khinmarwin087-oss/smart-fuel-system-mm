@@ -121,7 +121,20 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 /* Order History Specific Search Bar UI */
 .history-search { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2px 35px 2px 10px; display: flex; align-items: center; margin-bottom: 15px; position: relative; }
 .history-search input { border: none; background: transparent; padding: 10px 5px; width: 100%; outline: none; font-size: 13px; font-weight: bold; margin-bottom: 0; }
-</style>
+
+/* Menu Image Hover Effect */
+.card-img { cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease; }
+.card-img:hover { transform: scale(1.03); opacity: 0.9; }
+
+/* Image Viewer Modal Background (AliExpress Style) */
+.img-viewer-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 999; backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+.img-viewer-box { position: relative; max-width: 90%; max-height: 80vh; display: flex; flex-direction: column; align-items: center; }
+.img-viewer-src { max-width: 100%; max-height: 70vh; border-radius: 12px; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.img-viewer-title { color: white; margin-top: 15px; font-size: 16px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-family: 'Pyidaungsu', sans-serif; }
+.btn-close-viewer { position: absolute; top: -45px; right: 0; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.btn-close-viewer:hover { background: rgba(255,255,255,0.4); }
+        
+    </style>
 </head>
 <body>
        <div class="top-nav">
@@ -222,6 +235,15 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
     <p id="alert-msg" style="font-weight:bold;"></p>
     <button class="btn-main" onclick="closeAlert()">နားလည်ပါပြီ</button>
 </div>
+
+    <div id="imageViewerModal" class="img-viewer-overlay" onclick="closeImageViewer()">
+    <div class="img-viewer-box" onclick="event.stopPropagation()">
+        <button class="btn-close-viewer" onclick="closeImageViewer()"><i class="fa-solid fa-xmark"></i></button>
+        <img id="viewerImageTarget" src="" class="img-viewer-src" alt="Menu Large Image">
+        <div id="viewerImageTitle" class="img-viewer-title">ဟင်းပွဲအမည်</div>
+    </div>
+    </div>
+    
 <script>
        const BOT_TOKEN = "8215695761:AAF1qDjAJn7gjiHyzf8t7W6c8e51cim98sU";
 const CHAT_ID = "8116152317";
@@ -259,7 +281,7 @@ function renderMenu() {
     const items = menuData.filter(i => (activeCat === 'All' || i.category === activeCat) && i.name.toLowerCase().includes(q));
     grid.innerHTML = items.map(i => `
         <div class="card">
-            <img src="${i.image || 'https://via.placeholder.com/150'}" class="card-img">
+            <img src="${i.image || 'https://via.placeholder.com/150'}" class="card-img" onclick="openImageViewer('${i.image || 'https://via.placeholder.com/150'}', '${i.name}')">
             <div class="card-info">
                 <span class="item-name">${i.name}</span>
                 <span class="item-price">${i.price} Ks</span>
@@ -267,6 +289,7 @@ function renderMenu() {
             </div>
         </div>`).join('');
 }
+    
 
 function checkSearchInput() {
     const q = document.getElementById('searchInput').value;
@@ -492,6 +515,19 @@ function generateHDVoucher(vCode, name, phone, date, time, total, items) {
     try { const link = document.createElement('a'); link.download = `Voucher-${vCode}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } catch (e) {}
 }
 
+    // ပုံကို အကြီးချဲ့ပြပေးမည့် စနစ်ဖွင့်ခြင်း
+function openImageViewer(imgUrl, itemName) {
+    document.getElementById('viewerImageTarget').src = imgUrl;
+    document.getElementById('viewerImageTitle').innerText = itemName;
+    document.getElementById('imageViewerModal').style.display = 'flex';
+}
+
+// ပုံကြီးကြည့်ရှုရာမှ ပိတ်ပြီး ပင်မစာမျက်နှာသို့ ပြန်သွားခြင်း
+function closeImageViewer() {
+    document.getElementById('imageViewerModal').style.display = 'none';
+    document.getElementById('viewerImageTarget').src = ''; // Memory သက်သာစေရန် ပုံလမ်းကြောင်းကို ခေတ္တဖျက်ထားခြင်း
+}
+    
 window.onload = renderMenu;
 
   </script>
