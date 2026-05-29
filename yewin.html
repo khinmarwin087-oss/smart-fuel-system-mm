@@ -54,21 +54,39 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
     color: #ffffff; 
     display: flex; 
     align-items: center; 
-    gap: 6px;
+    gap: 10px;
     letter-spacing: 0.5px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* ကြက်ကင်အိုင်ကွန်လေးကို လှုပ်ယိမ်းနေစေမည့် Animation Effect */
+/* ကြက်ကင်အိုင်ကွန်ကို လခြမ်းပုံစံ (3D Spin) လည်စေမည့် Animation အသစ် */
 .brand-title i {
-    animation: waveIcon 2.5s infinite ease-in-out;
+    animation: moonFlip 3s infinite linear;
     color: #fbbf24; /* ရွှေဝါရောင် အိုင်ကွန် */
+    display: inline-block;
 }
 
-@keyframes waveIcon {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(15deg) scale(1.1); }
+@keyframes moonFlip {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
 }
+
+/* Halal အာရဗီစာသား ဒီဇိုင်းအလှဆင်ခြင်း */
+.halal-badge {
+    font-size: 13px;
+    font-weight: bold;
+    color: #10b981; /* အစိမ်းရောင်တောက်တောက်လေး */
+    background: rgba(16, 185, 129, 0.15);
+    padding: 2px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.5px;
+}
+        
 
 /* မှတ်တမ်းခလုတ်ကို ခေါင်းစီးနောက်ခံနှင့် လိုက်ဖက်အောင် အလှဆင်ခြင်း */
 .btn-history-top { 
@@ -242,11 +260,16 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 </head>
 <body>
     <div class="top-nav">
-    <div class="brand-area">
-        <h2 class="brand-title">
-            <i class="fa-solid fa-drumstick-bite"></i> မြင်သာကြက်ကင်
-        </h2>
-        <button class="btn-history-top" onclick="viewOrderHistory()">
+    <div class="brand-area" style="align-items: flex-start;">
+        <div style="display: flex; flex-direction: column;">
+            <h2 class="brand-title">
+                <i class="fa-solid fa-drumstick-bite"></i> မြင်သာကြက်ကင်
+            </h2>
+            <div>
+                <span class="halal-badge">✨ Halal | حلال</span>
+            </div>
+        </div>
+        <button class="btn-history-top" onclick="viewOrderHistory()" style="margin-top: 4px;">
             <i class="fa-solid fa-clock-rotate-left"></i> မှတ်တမ်း
         </button>
     </div>
@@ -268,7 +291,8 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
         <div class="cat-btn" onclick="filterCat('အရေခွံ', this)">အရေခွံ</div>
         <div class="cat-btn" onclick="filterCat('ဥ', this)">ဥ</div>
     </div>
-</div>
+    </div>
+    
     
 
 <div class="container">
