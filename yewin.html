@@ -26,29 +26,135 @@
 }
 body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: var(--text); font-size: 14px; }
 
-/* Top Nav & Branding UI */
-.top-nav { background: var(--pearl); padding: 15px 12px; position: sticky; top: 0; z-index: 100; border-radius: 0 0 20px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.brand-area { position: relative; display: flex; justify-content: center; align-items: center; padding: 5px 0 15px; }
-.brand-title { font-size: 20px; font-weight: 700; margin: 0; text-align: center; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.btn-history-top { position: absolute; right: 0; top: 2px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+/* အဆင့်မြှင့်တင်ထားသော Top Nav UI (AliExpress Style) */
+.top-nav { 
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+    padding: 18px 14px; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    border-radius: 0 0 24px 24px; 
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15); 
+}
+
+/* Branding Area Layout */
+.brand-area { 
+    position: relative; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 2px 14px 2px; 
+}
+
+/* ဆိုင်အမည် စာသားဒီဇိုင်း အလှဆင်ခြင်း */
+.brand-title { 
+    font-size: 22px; 
+    font-weight: 800; 
+    margin: 0; 
+    color: #ffffff; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ကြက်ကင်အိုင်ကွန်လေးကို လှုပ်ယိမ်းနေစေမည့် Animation Effect */
+.brand-title i {
+    animation: waveIcon 2.5s infinite ease-in-out;
+    color: #fbbf24; /* ရွှေဝါရောင် အိုင်ကွန် */
+}
+
+@keyframes waveIcon {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg) scale(1.1); }
+}
+
+/* မှတ်တမ်းခလုတ်ကို ခေါင်းစီးနောက်ခံနှင့် လိုက်ဖက်အောင် အလှဆင်ခြင်း */
+.btn-history-top { 
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    padding: 8px 14px; 
+    border-radius: 12px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    color: #ffffff; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+}
+.btn-history-top:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
 
 /* Search Bar with Cross (X) Button UI */
 .search-container { position: relative; width: 100%; margin-bottom: 5px; }
-.search-box { background: #f8fafc; border-radius: 10px; padding: 2px 35px 2px 10px; display: flex; align-items: center; border: 1px solid #e2e8f0; }
-.search-box input { border: none; background: transparent; padding: 8px; width: 100%; outline: none; font-size: 12px; }
+
+/* ခေါင်းစီးထဲက ပင်မ Search Box ကိုလည်း အရောင်လိုက်ညှိခြင်း */
+.search-box { 
+    background: rgba(255, 255, 255, 0.08); 
+    border-radius: 12px; 
+    padding: 2px 35px 2px 12px; 
+    display: flex; 
+    align-items: center; 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    transition: all 0.3s ease;
+}
+.search-box:focus-within {
+    background: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+}
+.search-box input { 
+    border: none; 
+    background: transparent; 
+    padding: 8px; 
+    width: 100%; 
+    outline: none; 
+    font-size: 13px; 
+    color: #ffffff; /* စာရိုက်ရင် အဖြူရောင်ထွက်မည် */
+}
+.search-box input:focus {
+    color: #1e293b; /* Focus ဖြစ်ချိန် စာရိုက်ရင် အမည်းရောင်ပြောင်းမည် */
+}
+/* Focus ဖြစ်သွားရင် Search Icon အရောင်ပြောင်းရန် */
+.search-box:focus-within i {
+    color: #1e293b !important;
+}
 .btn-clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; display: none; padding: 5px; }
 
 /* Categories */
 .cat-row { display: flex; overflow-x: auto; gap: 6px; padding: 12px 0 2px; scrollbar-width: none; }
 .cat-row::-webkit-scrollbar { display: none; }
-.cat-btn { background: var(--pearl); border: 1px solid #e2e8f0; padding: 6px 14px; border-radius: 10px; white-space: nowrap; font-size: 12px; font-weight: bold; cursor: pointer; }
-.cat-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+.cat-btn { 
+    background: rgba(255, 255, 255, 0.06); 
+    border: 1px solid rgba(255, 255, 255, 0.12); 
+    padding: 6px 14px; 
+    border-radius: 10px; 
+    white-space: nowrap; 
+    font-size: 12px; 
+    font-weight: bold; 
+    color: #cbd5e1;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+}
+.cat-btn.active { 
+    background: #ffffff; 
+    color: #0f172a; 
+    border-color: #ffffff; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
 /* Grid Cards */
 .container { padding: 10px; max-width: 500px; margin: auto; }
 .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .card { background: var(--pearl); border-radius: 15px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #edf2f7; }
-.card-img { width: 100%; height: 100px; object-fit: cover; background: #eee; }
+.card-img { width: 100%; height: 100px; object-fit: cover; background: #eee; cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease; }
+.card-img:hover { transform: scale(1.03); opacity: 0.9; }
 .card-info { padding: 10px; text-align: center; }
 .item-name { font-weight: 700; font-size: 13px; display: block; height: 32px; margin-bottom: 4px; overflow: hidden; }
 .item-price { color: #0f172a; font-weight: 800; font-size: 14px; }
@@ -89,6 +195,7 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
 label { font-size: 11px; font-weight: bold; color: var(--sub); margin-bottom: 5px; display: block; }
 input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 12px; box-sizing: border-box; font-size: 14px; background: #f8fafc; }
 input:focus { border-color: var(--accent); background: white; outline: none; }
+
 .date-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
 .date-chip { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; text-align: center; font-size: 13px; font-weight: bold; cursor: pointer; }
 .date-chip.active { background: #1e293b; border-color: #1e293b; color: white; }
@@ -122,10 +229,6 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 .history-search { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2px 35px 2px 10px; display: flex; align-items: center; margin-bottom: 15px; position: relative; }
 .history-search input { border: none; background: transparent; padding: 10px 5px; width: 100%; outline: none; font-size: 13px; font-weight: bold; margin-bottom: 0; }
 
-/* Menu Image Hover Effect */
-.card-img { cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease; }
-.card-img:hover { transform: scale(1.03); opacity: 0.9; }
-
 /* Image Viewer Modal Background (AliExpress Style) */
 .img-viewer-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 999; backdrop-filter: blur(5px); align-items: center; justify-content: center; }
 .img-viewer-box { position: relative; max-width: 90%; max-height: 80vh; display: flex; flex-direction: column; align-items: center; }
@@ -133,24 +236,27 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 .img-viewer-title { color: white; margin-top: 15px; font-size: 16px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-family: 'Pyidaungsu', sans-serif; }
 .btn-close-viewer { position: absolute; top: -45px; right: 0; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .btn-close-viewer:hover { background: rgba(255,255,255,0.4); }
+    
         
     </style>
 </head>
 <body>
-       <div class="top-nav">
+    <div class="top-nav">
     <div class="brand-area">
-        <h2 class="brand-title">🍗 မြင်သာကြက်ကင်</h2>
+        <h2 class="brand-title">
+            <i class="fa-solid fa-drumstick-bite"></i> မြင်သာကြက်ကင်
+        </h2>
         <button class="btn-history-top" onclick="viewOrderHistory()">
-            <i class="fa-solid fa-clock-history"></i> မှတ်တမ်း
+            <i class="fa-solid fa-clock-rotate-left"></i> မှတ်တမ်း
         </button>
     </div>
     
     <div class="search-container">
         <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8; font-size: 12px;"></i>
-            <input type="text" id="searchInput" placeholder="ဟင်းပွဲအမည် ရှာဖွေရန်..." onkeyup="checkSearchInput()">
+            <i class="fa-solid fa-magnifying-glass" style="color:rgba(255,255,255,0.4); font-size: 13px;"></i>
+            <input type="text" id="searchInput" placeholder="ဟင်းပွဲအမည် ရိုက်ရှာပါ..." onkeyup="checkSearchInput()">
         </div>
-        <button id="clearSearchBtn" class="btn-clear-search" onclick="clearMenuSearch()"><i class="fa-solid fa-circle-xmark"></i></button>
+        <button id="clearSearchBtn" class="btn-clear-search" style="color: rgba(255,255,255,0.5);" onclick="clearMenuSearch()"><i class="fa-solid fa-circle-xmark"></i></button>
     </div>
 
     <div class="cat-row">
@@ -163,6 +269,7 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
         <div class="cat-btn" onclick="filterCat('ဥ', this)">ဥ</div>
     </div>
 </div>
+    
 
 <div class="container">
     <div id="grid-box" class="menu-grid"></div>
@@ -293,9 +400,18 @@ function renderMenu() {
 
 function checkSearchInput() {
     const q = document.getElementById('searchInput').value;
-    document.getElementById('clearSearchBtn').style.display = q.length > 0 ? 'block' : 'none';
+    const clearBtn = document.getElementById('clearSearchBtn');
+    
+    if (q.length > 0) {
+        clearBtn.style.display = 'block';
+        // စာရိုက်ထားချိန်တွင် (X) ခလုတ်ကို အမည်းရောင်ပြောင်းရန်
+        clearBtn.style.color = '#1e293b';
+    } else {
+        clearBtn.style.display = 'none';
+    }
     renderMenu();
 }
+    
 
 function clearMenuSearch() {
     document.getElementById('searchInput').value = '';
