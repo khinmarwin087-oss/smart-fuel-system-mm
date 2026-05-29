@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --pearl: #ffffff; --bg: #f1f5f9; --accent: #f59e0b; --text: #1e293b; --sub: #64748b; --danger: #ef4444; }
+        :root { --pearl: #ffffff; --bg: #f1f5f9; --accent: #f59e0b; --text: #1e293b; --sub: #64748b; --danger: #ef4444; --success: #10b981; }
         body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: var(--text); font-size: 14px; }
 
         /* Top Nav */
@@ -70,8 +70,14 @@
         .date-chip.active { background: #fff8eb; border-color: var(--accent); color: #b45309; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; }
-        .btn-s { border: none; padding: 12px; border-radius: 12px; color: white; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
+        .btn-main:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
         .alert-pop { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; width: 80%; max-width: 300px; padding: 25px 20px; border-radius: 20px; z-index: 1000; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+
+        /* Receipt (Voucher) Styling */
+        .receipt-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 15px; padding: 20px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-top: 10px; font-family: 'Pyidaungsu', sans-serif; }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+        .receipt-divider { border-top: 1px dashed #e2e8f0; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -113,39 +119,41 @@
         </div>
         
         <div class="modal-body" id="modal-scroll-area">
-            <div id="cart-list"></div>
-            <div id="form-box" style="display: none;">
-                <div class="form-card">
-                    <label>👤 ဝယ်သူအမည်</label>
-                    <input type="text" id="in-name" placeholder="အမည်ဖြည့်ပါ">
-                    
-                    <label><i class="fa-brands fa-telegram" style="color: #24A1DE;"></i> Telegram Chat ID နံပါတ်</label>
-                    <input type="number" id="in-phone" placeholder="သင့် Telegram Chat ID ကို ရိုက်ထည့်ပါ">
-                    
-                    <label>📅 ရက်စွဲ</label>
-                    <div class="date-choices">
-                        <div class="date-chip active" id="chip-today" onclick="selectDate('today')">ဒီနေ့</div>
-                        <div class="date-chip" id="chip-other" onclick="selectDate('other')">တခြားရက်</div>
-                    </div>
-                    <div id="custom-date-row" style="display:none;">
-                        <label>🗓️ ရက်စွဲ</label>
-                        <input type="date" id="in-date">
-                    </div>
-                    <label>🕒 အချိန်</label>
-                    <input type="time" id="in-time">
-                    
-                    <div style="padding: 10px; border: 1px solid #ddd; border-radius: 12px; background: #fff; margin-bottom: 10px;">
-                        <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.5;">
-                            📜 အော်ဒါတင်ပြီး <strong>(၅) မိနစ်အတွင်း</strong> ဆိုင်မှ အကြောင်းမပြန်ပါက ဖုန်းဆက်ပေးပါရန် မေတ္တာရပ်ခံအပ်ပါသည်။
-                        </p>
-                    </div>
-                    <div style="display:flex; gap:10px;">        
-                        <button class="btn-s" style="background:#7360f2;" onclick="sendOrder('viber')"><i class="fa-brands fa-viber"></i> Viber</button>
-                        <button class="btn-s" style="background:#0088cc;" onclick="sendOrder('tele')"><i class="fa-brands fa-telegram"></i> Telegram</button>
+            <div id="receipt-view" style="display: none;"></div>
+
+            <div id="cart-content-wrapper">
+                <div id="cart-list"></div>
+                <div id="form-box" style="display: none;">
+                    <div class="form-card">
+                        <label>👤 ဝယ်သူအမည်</label>
+                        <input type="text" id="in-name" placeholder="အမည်ဖြည့်ပါ">
+                        <label>📞 Telegram ID သို့မဟုတ် ဖုန်းနံပါတ်</label>
+                        <input type="tel" id="in-phone" placeholder="၀၉... သို့မဟုတ် Telegram ID">
+                        <label>📅 ရက်စွဲ</label>
+                        <div class="date-choices">
+                            <div class="date-chip active" id="chip-today" onclick="selectDate('today')">ဒီနေ့</div>
+                            <div class="date-chip" id="chip-other" onclick="selectDate('other')">တခြားရက်</div>
+                        </div>
+                        <div id="custom-date-row" style="display:none;">
+                            <label>🗓️ ရက်စွဲ</label>
+                            <input type="date" id="in-date">
+                        </div>
+                        <label>🕒 အချိန်</label>
+                        <input type="time" id="in-time">
+                        
+                        <div style="padding: 10px; border: 1px solid #ddd; border-radius: 12px; background: #fff; margin-bottom: 15px;">
+                            <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.5;">
+                                📜 အော်ဒါတင်ပြီး <strong>(၅) မိနစ်အတွင်း</strong> ဆိုင်မှ အကြောင်းမပြန်ပါက ဖုန်းဆက်ပေးပါရန် မေတ္တာရပ်ခံအပ်ပါသည်။
+                            </p>
+                        </div>
+                        
+                        <button id="submit-order-btn" class="btn-main" style="background: var(--success);" onclick="sendOrder()">
+                            <i class="fa-solid fa-circle-check"></i> အော်ဒါအတည်ပြုမည် ➔
+                        </button>
                     </div>
                 </div>
+                <button id="next-btn" class="btn-main" style="margin-top:20px;" onclick="step2()">အော်ဒါတင်မည် ➔</button>
             </div>
-            <button id="next-btn" class="btn-main" style="margin-top:20px;" onclick="step2()">အော်ဒါတင်မည် ➔</button>
         </div>
     </div>
 </div>
@@ -157,35 +165,32 @@
 </div>
 
 <script>
-    const MY_PHONE = "959767287345";
-    const WEB_LINK = window.location.href;
     const BOT_TOKEN = "8215695761:AAF1qDjAJn7gjiHyzf8t7W6c8e51cim98sU";
     const CHAT_ID = "8116152317";
 
     const menuData = [
-  { id: 2, name: 'ကြက်ရင်အုံ', price: 4000, category: 'အသား', image: 'https://i.ibb.co/FLb4YzNT/1771770596329.png' },
-  { id: 20, name: 'ကြက်ပေါင်', price: 4000, category: 'အသား', image: 'https://i.ibb.co/twQQYmYN/1771771044356.png' },
-  { id: 1, name: 'ကြက်ပေါင်', price: 3000, category: 'အသား', image: 'https://i.ibb.co/JWsqDFX9/1768228481848.png' },
-  { id: 3, name: 'ဆိတ်သားကင်', price: 1500, category: 'အသား', image: 'https://i.ibb.co/twQjTScV/IMG-20251231-003231.png' },
-  { id: 14, name: 'လက်မောင်းလုံး', price: 1000, category: 'အသား', image: '' },
-  { id: 7, name: 'အတောင်ပျံ (CP)', price: 1000, category: 'အရိုး', image: 'https://i.ibb.co/rKJY26TM/1767147666947.png' },
-  { id: 18, name: 'အပ်မှို', price: 1000, category: 'အသီးအရွက်', image: 'https://i.ibb.co/PsGSSTK4/1768228089572.png' },
-  { id: 19, name: 'ငုံးဥ', price: 1000, category: 'ဥ', image: 'https://i.ibb.co/xtyy8V0N/1768211447515.png' },
-  { id: 4, name: 'အသား ချောင်း(ကြက်)', price: 1000, category: 'အသား', image: 'https://i.ibb.co/rRd5P91j/1767118697374.png' },
-  { id: 15, name: 'အဆီပူး', price: 1000, category: 'အရေခွံ', image: 'https://i.ibb.co/PGcW9j6r/1767118749960.png' },
-  { id: 13, name: 'ခြေထောက်(CP)', price: 700, category: 'အရိုး', image: 'https://i.ibb.co/7dPMPdR9/1771774751760.png' },
-  { id: 5, name: 'အရေခွံ', price: 700, category: 'အရေခွံ', image: 'https://i.ibb.co/MkJqnDyG/1767147480724.png' },
-  { id: 6, name: 'အတောင်ပျံ', price: 700, category: 'အရိုး', image: 'https://i.ibb.co/7dpqp2BJ/1771771310595.png' },
-  { id: 8, name: 'အူ', price: 700, category: 'ကလီစာ', image: 'https://i.ibb.co/0VZfW6jW/1771771269724.png' },
-  { id: 11, name: 'အသည်းမြစ်', price: 700, category: 'ကလီစာ', image: 'https://i.ibb.co/twRsK5S7/1767147537379.png' },
-  { id: 16, name: 'အသားတု', price: 400, category: 'အသီးအရွက်', image: 'https://i.ibb.co/hpPRPDr/1768208099763.png' },
-  { id: 21, name: 'အာလူး', price: 500, category: 'အသီးအရွက်', image: '' },
-  { id: 9, name: 'ခေါင်း', price: 400, category: 'အရိုး', image: 'https://i.ibb.co/Y4dYQ0Q2/1771774457826.png' },
-  { id: 10, name: 'လည် ချောင်း', price: 400, category: 'အရိုး', image: 'https://i.ibb.co/bjL850PP/1768208169381.png' },
-  { id: 12, name: 'ခြေထောက်', price: 400, category: 'အရိုး', image: '' },
-  { id: 17, name: 'ရုံးပတေသီး', price: 300, category: 'အသီးအရွက်', image: 'https://i.ibb.co/cSCzCKN5/1768228376693.png' }
-];
-    
+      { id: 2, name: 'ကြက်ရင်အုံ', price: 4000, category: 'အသား', image: 'https://i.ibb.co/FLb4YzNT/1771770596329.png' },
+      { id: 20, name: 'ကြက်ပေါင်', price: 4000, category: 'အသား', image: 'https://i.ibb.co/twQQYmYN/1771771044356.png' },
+      { id: 1, name: 'ကြက်ပေါင်', price: 3000, category: 'အသား', image: 'https://i.ibb.co/JWsqDFX9/1768228481848.png' },
+      { id: 3, name: 'ဆိတ်သားကင်', price: 1500, category: 'အသား', image: 'https://i.ibb.co/twQjTScV/IMG-20251231-003231.png' },
+      { id: 14, name: 'လက်မောင်းလုံး', price: 1000, category: 'အသား', image: '' },
+      { id: 7, name: 'အတောင်ပျံ (CP)', price: 1000, category: 'အရိုး', image: 'https://i.ibb.co/rKJY26TM/1767147666947.png' },
+      { id: 18, name: 'အပ်မှို', price: 1000, category: 'အသီးအရွက်', image: 'https://i.ibb.co/PsGSSTK4/1768228089572.png' },
+      { id: 19, name: 'ငုံးဥ', price: 1000, category: 'ဥ', image: 'https://i.ibb.co/xtyy8V0N/1768211447515.png' },
+      { id: 4, name: 'အသား ချောင်း(ကြက်)', price: 1000, category: 'အသား', image: 'https://i.ibb.co/rRd5P91j/1767118697374.png' },
+      { id: 15, name: 'အဆီပူး', price: 1000, category: 'အရေခွံ', image: 'https://i.ibb.co/PGcW9j6r/1767118749960.png' },
+      { id: 13, name: 'ခြေထောက်(CP)', price: 700, category: 'အရိုး', image: 'https://i.ibb.co/7dPMPdR9/1771774751760.png' },
+      { id: 5, name: 'အရေခွံ', price: 700, category: 'အရေခွံ', image: 'https://i.ibb.co/MkJqnDyG/1767147480724.png' },
+      { id: 6, name: 'အတောင်ပျံ', price: 700, category: 'အရိုး', image: 'https://i.ibb.co/7dpqp2BJ/1771771310595.png' },
+      { id: 8, name: 'အူ', price: 700, category: 'ကလီစာ', image: 'https://i.ibb.co/0VZfW6jW/1771771269724.png' },
+      { id: 11, name: 'အသည်းမြစ်', price: 700, category: 'ကလီစာ', image: 'https://i.ibb.co/twRsK5S7/1767147537379.png' },
+      { id: 16, name: 'အသားတု', price: 400, category: 'အသီးအရွက်', image: 'https://i.ibb.co/hpPRPDr/1768208099763.png' },
+      { id: 21, name: 'အာလူး', price: 500, category: 'အသီးအရွက်', image: '' },
+      { id: 9, name: 'ခေါင်း', price: 400, category: 'အရိုး', image: 'https://i.ibb.co/Y4dYQ0Q2/1771774457826.png' },
+      { id: 10, name: 'လည် ချောင်း', price: 400, category: 'အရိုး', image: 'https://i.ibb.co/bjL850PP/1768208169381.png' },
+      { id: 12, name: 'ခြေထောက်', price: 400, category: 'အရိုး', image: '' },
+      { id: 17, name: 'ရုံးပတေသီး', price: 300, category: 'အသီးအရွက်', image: 'https://i.ibb.co/cSCzCKN5/1768228376693.png' }
+    ];
 
     let cart = {};
     let activeCat = 'All', chosenDay = 'today';
@@ -221,6 +226,9 @@
     }
 
     function openCart() {
+        document.getElementById('receipt-view').style.display = 'none';
+        document.getElementById('cart-content-wrapper').style.display = 'block';
+
         const list = document.getElementById('cart-list');
         let html = '', total = 0, count = 0;
         for (let id in cart) {
@@ -252,6 +260,7 @@
         document.getElementById('cart-list').style.display = 'block';
         document.getElementById('next-btn').style.display = 'block';
         document.getElementById('modal-title').innerText = "ခြင်းတောင်းစာရင်း";
+        document.getElementById('modal-back').style.display = 'flex';
         document.getElementById('modal-back').onclick = () => { document.getElementById('cart-sheet').style.display = 'none'; };
     }
 
@@ -267,80 +276,232 @@
         document.getElementById('form-box').style.display = 'block'; 
         document.getElementById('next-btn').style.display = 'none'; 
         document.getElementById('modal-title').innerText = "အချက်အလက်ဖြည့်ပါ"; 
-
-         // 🌟 ဒီစာသားလေးကို အသစ်ညှပ်ထည့်ပေးပါ
-        document.getElementById('in-phone').placeholder = "သင့် Telegram Chat ID နံပါတ် ရိုက်ထည့်ပါ";
         
-        // Back ခလုတ်နှိပ်ရင် Form ပြန်ပိတ်ပြီး Cart list ကိုပဲ မြင်ရအောင် ပြန်လုပ်ပေးမယ်
         document.getElementById('modal-back').onclick = () => {
             document.getElementById('form-box').style.display = 'none';
             document.getElementById('next-btn').style.display = 'block';
             document.getElementById('modal-title').innerText = "ခြင်းတောင်းစာရင်း";
-            // Modal Back ကို နဂိုအတိုင်း Cart ပိတ်တဲ့အလုပ် ပြန်ပေးမယ်
             document.getElementById('modal-back').onclick = () => { document.getElementById('cart-sheet').style.display = 'none'; };
         };
 
-        // Form ဆီကို Scroll ဆွဲချမယ်
         setTimeout(() => {
             document.getElementById('form-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
     }
     
-     // 🌟 အဆင့်မြှင့်တင်ထားသော အော်ဒါပို့စနစ် (Auto Send Customer & Shop Owner)
-    async function sendOrder(via) {
-        const name = document.getElementById('in-name').value;
-        const telegramId = document.getElementById('in-phone').value; // ဝယ်သူ ဖြည့်လိုက်သော Telegram ID နံပါတ်
+    async function sendOrder() {
+        const name = document.getElementById('in-name').value.trim();
+        const phone = document.getElementById('in-phone').value.trim();
         const time = document.getElementById('in-time').value;
         const otherDate = document.getElementById('in-date').value;
         
-        if(!name || !telegramId || !time) return myPop("အချက်အလက်တွေ ပြည့်စုံအောင် ဖြည့်ပေးပါ ✨");
+        if(!name || !phone || !time) return myPop("အချက်အလက်တွေ ပြည့်စုံအောင် ဖြည့်ပေးပါ ✨");
 
-        let dayStr = chosenDay === 'today' ? "ဒီနေ့ (Today)" : otherDate;
-        let items = [];
+        // Double Order မဖြစ်အောင် ခလုတ်ကို ပိတ်လိုက်ခြင်း
+        const submitBtn = document.getElementById('submit-order-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> အော်ဒါပို့နေပါသည်...";
+
+        let dayStr = chosenDay === 'today' ? "ဒီနေ့" : otherDate;
+        let itemsText = [];
+        let receiptItemsHtml = '';
+        let totalAmount = 0;
+
         for(let id in cart) {
             const i = menuData.find(m => m.id == id);
-            items.push(`▪️ ${i.name} (${cart[id]} ခု)`);
+            let itemTotal = i.price * cart[id];
+            totalAmount += itemTotal;
+            itemsText.push(`▪️ ${i.name} (${cart[id]} ခု)`);
+            
+            receiptItemsHtml += `
+                <div class="receipt-row">
+                    <span>${i.name} x ${cart[id]}</span>
+                    <span>${itemTotal.toLocaleString()} Ks</span>
+                </div>`;
         }
-        const total = document.getElementById('bar-total').innerText;
 
-        // 1️⃣ ဆိုင်ရှင်၏ Telegram Group/Chat ဆီသို့ ပို့မည့် အော်ဒါစာရင်း
-        const ownerMsg = `🍗 *မြင်သာကြက်ကင် - အော်ဒါအသစ်*\n👤 *အမည်:* ${name}\n🆔 *Telegram ID:* ${telegramId}\n📅 *နေ့ရက်:* ${dayStr}\n🕒 *အချိန်:* ${time}\n━━━━━━━━━━━━━━\n${items.join('\n')}\n━━━━━━━━━━━━━━\n💰 *စုစုပေါင်း:* *${total} MMK*\n\n🛒 *အော်ဒါပြန်ကြည့်ရန်* 👇\n${WEB_LINK}`;
-
-        // 2️⃣ ဝယ်သူ့ထံသို့ Bot မှတစ်ဆင့် တိုက်ရိုက် Auto ပို့ပေးမည့် အောင်မြင်ကြောင်းစာတို
-        const customerMsg = `🎉 *Order Success!*\n\n${name} လူကြီးမင်းခင်ဗျာ... မြင်သာကြက်ကင်မှ လူကြီးမင်း၏ အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။ ဆိုင်မှ (၅) မိနစ်အတွင်း ပြန်လည်ဆက်သွယ်ပေးပါမည်။ ကျေးဇူးတင်ရှိပါသည်ခင်ဗျာ။ ✨`;
+        const formattedTotal = totalAmount.toLocaleString();
+        const ownerMsg = `🍗 *မြင်သာကြက်ကင် - အော်ဒါအသစ်*\n👤 *အမည်:* ${name}\n📞 *ဖုန်း/ID:* ${phone}\n📅 *နေ့ရက်:* ${dayStr}\n🕒 *အချိန်:* ${time}\n━━━━━━━━━━━━━━\n${itemsText.join('\n')}\n━━━━━━━━━━━━━━\n💰 *စုစုပေါင်း:* *${formattedTotal} MMK*`;
 
         try {
-            // 🚀 သင့်ဆိုင်ရှင် Telegram Chat ID ဆီသို့ အော်ဒါစာရင်း လှမ်းပို့ခြင်း
+            // ဆိုင်ရှင် Telegram Bot ထံသို့ အော်ဒါပို့ခြင်း
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: ownerMsg, parse_mode: 'Markdown' })
             });
 
-            // 🚀 ဝယ်သူ့ရဲ့ Telegram ID ထဲသို့ Auto Success Message တိုက်ရိုက်လှမ်းပို့ခြင်း
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: telegramId, text: customerMsg, parse_mode: 'Markdown' })
-            });
-
-            // ခလုတ်ရွေးချယ်မှုအလိုက် App ဖွင့်ပေးခြင်း
-            if(via === 'viber') {
-                navigator.clipboard.writeText(ownerMsg).then(() => {
-                    myPop("အော်ဒါကို Copy ကူးပြီးပါပြီ။ Viber တွင် Paste လုပ်ပြီး ထပ်မံပေးပို့နိုင်ပါသည်။");
-                    setTimeout(() => { window.location.href = `viber://chat?number=%2B${MY_PHONE}`; }, 1200);
-                });
-            } else {
-                window.location.href = `https://t.me/+${MY_PHONE}?text=${encodeURIComponent(ownerMsg)}`;
+            // တကယ်လို့ ဝယ်သူက Telegram chat_id ရိုက်ထည့်ခဲ့ရင် သူ့ဆီကိုပါ Auto Message ပို့ပေးခြင်း
+            if (!isNaN(phone) && phone.length > 7 && !phone.startsWith("09")) {
+                const customerMsg = `🎉 *Order Success!*\n\n${name} လူကြီးမင်းခင်ဗျာ... မြင်သာကြက်ကင်မှ လူကြီးမင်း၏ အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။ ဆိုင်မှ (၅) မိနစ်အတွင်း ပြန်လည်ဆက်သွယ်ပေးပါမည်။ ကျေးဇူးတင်ရှိပါသည်ခင်ဗျာ။ ✨`;
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: phone, text: customerMsg, parse_mode: 'Markdown' })
+                }).catch(e => console.log("Customer direct message skipped"));
             }
 
-            // Cart အား Reset ချပြီး ပိတ်လိုက်ခြင်း
+            // အော်ဒါအောင်မြင်သွားသည့်အတွက် Voucher (Receipt) မျက်နှာပြင်ကို ပြသခြင်း
+            showReceipt(name, phone, dayStr, time, receiptItemsHtml, formattedTotal);
+            
+            // ခြင်းတောင်းကို လုံးဝ Reset ချပစ်ခြင်း (ထပ်မံမှာယူ၍မရအောင်)
             cart = {}; 
             updateFloatingBar(); 
-            document.getElementById('cart-sheet').style.display = 'none';
 
         } catch (e) { 
-            myPop("Error! Telegram စနစ်သို့ အော်ဒါပို့၍မရပါ။"); 
+            myPop("Error! အော်ဒါပို့ရတာ အဆင်မပြေဖြစ်သွားပါသဖြင့် ပြန်လည်ကြိုးစားပေးပါ။"); 
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = "<i class='fa-solid fa-circle-check'></i> အော်ဒါအတည်ပြုမည် ➔";
+        }
+    }
+
+    function showReceipt(name, phone, date, time, itemsHtml, total) {
+        document.getElementById('cart-content-wrapper').style.display = 'none';
+        document.getElementById('modal-title').innerText = "🎉 အော်ဒါတင်ပြီးပါပြီ";
+        document.getElementById('item-count-badge').innerText = "Success";
+        document.getElementById('modal-back').style.display = 'none'; // အော်ဒါတင်ပြီးရင် Back ဆွဲလို့မရအောင် ပိတ်ပစ်သည်
+
+        const receiptView = document.getElementById('receipt-view');
+        receiptView.style.display = 'block';
+        
+        receiptView.innerHTML = `
+            <div style="text-align: center; color: var(--success); margin: 15px 0;">
+                <i class="fa-solid fa-circle-check" style="font-size: 45px;"></i>
+                <h4 style="margin: 10px 0 5px; font-size: 16px;">အော်ဒါအောင်မြင်ပါသည်</h4>
+                <p style="font-size: 12px; color: var(--sub); margin: 0;">အောက်ပါဘောက်ချာကို ဖုန်းထဲသို့ သိမ်းဆည်းပေးထားပါသည်။</p>
+            </div>
+            
+            <div class="receipt-card" id="voucher-element">
+                <div class="receipt-header">
+                    <b style="font-size: 16px; color: #000;">🍗 မြင်သာကြက်ကင်</b>
+                    <div style="font-size: 11px; color: var(--sub); margin-top: 4px;">ဝယ်ယူအားပေးမှုကို ကျေးဇူးတင်ပါသည်</div>
+                </div>
+                <div class="receipt-row"><b>ဝယ်သူအမည်:</b> <span>${name}</span></div>
+                <div class="receipt-row"><b>ဖုန်း/ID:</b> <span>${phone}</span></div>
+                <div class="receipt-row"><b>နေ့ရက်/အချိန်:</b> <span>${date} (${time})</span></div>
+                <div class="receipt-divider"></div>
+                <b style="font-size: 12px; display:block; margin-bottom:8px; color:var(--sub);">မှာယူသည့်ပစ္စည်းများ:</b>
+                ${itemsHtml}
+                <div class="receipt-divider"></div>
+                <div class="receipt-row" style="font-size: 15px; font-weight: bold;">
+                    <span>စုစုပေါင်းကျသင့်ငွေ:</span>
+                    <span style="color: var(--accent);">${total} Ks</span>
+                </div>
+            </div>
+            
+            <button class="btn-main" style="margin-top: 20px; background: #1e293b;" onclick="location.reload()">
+                <i class="fa-solid fa-house"></i> ပင်မစာမျက်နှာသို့ ပြန်သွားမည်
+            </button>
+        `;
+
+        // Voucher အား ပုံအဖြစ် Auto Download ဆွဲပေးခြင်း
+        setTimeout(() => { generateAndDownloadVoucher(name, phone, date, time, total); }, 600);
+    }
+
+    function generateAndDownloadVoucher(name, phone, date, time, total) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // ကင်းဗတ်စ် အရွယ်အစား သတ်မှတ်ခြင်း
+        canvas.width = 450;
+        
+        // အမြင့်ကို ပစ္စည်းအရေအတွက်အလိုက် တွက်ချက်ခြင်း
+        let currentY = 180;
+        let lineSpacing = 30;
+        
+        let itemsArray = [];
+        for (let id in menuData) {
+            // လောလောဆယ် cart က reset ဖြစ်သွားလို့ စာသားထဲကနေ ပစ္စည်းစာရင်းကို ပြန်ယူတာ ပိုစိတ်ချရပါတယ်
+        }
+        
+        // ခန့်မှန်းခြေ စုစုပေါင်းအမြင့်တွက်ချက်မှု
+        const receiptRows = document.querySelectorAll('.receipt-card .receipt-row');
+        canvas.height = 300 + (receiptRows.length * lineSpacing);
+
+        // Background အရောင်ခြယ်ခြင်း
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // ဘောင်ခတ်ခြင်း
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+        // Header ရေးသားခြင်း
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText('🍗 မြင်သာကြက်ကင်', canvas.width / 2, 55);
+        
+        ctx.fillStyle = '#64748b';
+        ctx.font = '14px sans-serif';
+        ctx.fillText('ဝယ်ယူအားပေးမှုကို ကျေးဇူးတင်ပါသည်', canvas.width / 2, 85);
+        
+        // Dashed Line
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(25, 110); ctx.lineTo(425, 110); ctx.stroke();
+        ctx.setLineDash([]); // Reset line dash
+
+        // အချက်အလက်များ ရေးသားခြင်း
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '15px sans-serif';
+        
+        ctx.fillText(`ဝယ်သူအမည်:   ${name}`, 30, 140);
+        ctx.fillText(`ဖုန်း / ID:        ${phone}`, 30, 170);
+        ctx.fillText(`နေ့ရက်/အချိန်:  ${date} (${time})`, 30, 200);
+
+        // Dashed Line
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(25, 225); ctx.lineTo(425, 225); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('မှာယူသည့်ပစ္စည်းများ:', 30, 255);
+        
+        ctx.fillStyle = '#1e293b';
+        let currentHeightY = 290;
+        
+        // HTML Receipt ထဲက စာရင်းတွေကို ဆွဲယူပြီး ကင်းဗတ်စ်ပေါ် ပုံဖော်ခြင်း
+        const itemRows = document.querySelectorAll('.receipt-card .receipt-row');
+        itemRows.forEach((row, index) => {
+            if (index > 2 && index < itemRows.length - 1) { // ပစ္စည်းစာရင်းများကိုပဲ ယူမည်
+                let spans = row.querySelectorAll('span');
+                if (spans.length === 2) {
+                    ctx.textAlign = 'left';
+                    ctx.fillText(spans[0].innerText, 30, currentHeightY);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(spans[1].innerText, 420, currentHeightY);
+                    currentHeightY += 30;
+                }
+            }
+        });
+
+        // Dashed Line
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(25, currentHeightY); ctx.lineTo(425, currentHeightY); ctx.stroke();
+        ctx.setLineDash([]);
+        
+        currentHeightY += 35;
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'left';
+        ctx.fillText('စုစုပေါင်းကျသင့်ငွေ:', 30, currentHeightY);
+        
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillText(`${total} Ks`, 420, currentHeightY);
+
+        // Image Auto Download ပြုလုပ်ခြင်း
+        try {
+            const link = document.createElement('a');
+            link.download = `Minyathar-Order-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.log("Auto download failed, fallback to screenshot notice");
         }
     }
 
