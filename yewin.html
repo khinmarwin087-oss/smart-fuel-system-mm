@@ -2,6 +2,9 @@
 <html lang="my">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6N321JW2GM"></script>
+    <!-- Arabic Font လှလှလေး ချိတ်ဆက်ခြင်း -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+    
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -19,7 +22,7 @@
       :root { 
     --pearl: #ffffff; 
     --bg: #f1f5f9; 
-    --accent: #1e293b; 
+    --accent: #f59e0b; 
     --text: #1e293b; 
     --sub: #64748b; 
     --danger: #ef4444; 
@@ -42,7 +45,7 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
     position: relative; 
     display: flex; 
     justify-content: space-between; 
-    align-items: center; 
+    align-items: flex-start; 
     padding: 0 2px 14px 2px; 
 }
 
@@ -59,32 +62,33 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* ကြက်ကင်အိုင်ကွန်ကို လခြမ်းပုံစံ (3D Spin) လည်စေမည့် Animation အသစ် */
+/* လခြမ်းပုံစံအိုင်ကွန်ကို 3D ပတ်ချာလည် လည်စေမည့် Animation အစစ် */
 .brand-title i {
-    animation: moonFlip 3s infinite linear;
-    color: #fbbf24; /* ရွှေဝါရောင် အိုင်ကွန် */
+    animation: moon3DSpin 3s infinite linear;
+    color: #fbbf24; /* ရွှေဝါရောင် လခြမ်း */
     display: inline-block;
 }
 
-@keyframes moonFlip {
+@keyframes moon3DSpin {
     0% { transform: rotateY(0deg); }
     100% { transform: rotateY(360deg); }
 }
 
-/* Halal အာရဗီစာသား ဒီဇိုင်းအလှဆင်ခြင်း */
+/* Halal အာရဗီစာသား ဒီဇိုင်း (Font အလှ ပြင်ဆင်ပြီး) */
 .halal-badge {
-    font-size: 13px;
+    font-family: 'Cairo', 'Pyidaungsu', sans-serif; /* အာရဗီ Font အလှ ထည့်သွင်းမှု */
+    font-size: 14px; /* စာသား မြင်သာအောင် ပိုကြီးပေးထားသည် */
     font-weight: bold;
-    color: #10b981; /* အစိမ်းရောင်တောက်တောက်လေး */
+    color: #10b981; 
     background: rgba(16, 185, 129, 0.15);
-    padding: 2px 10px;
+    padding: 2px 12px;
     border-radius: 20px;
     border: 1px solid rgba(16, 185, 129, 0.3);
-    margin-top: 4px;
+    margin-top: 5px;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    letter-spacing: 0.5px;
+    gap: 6px;
+    direction: rtl; /* အာရဗီစာသား ညာမှဘယ်သို့ စနစ်တကျ ပြသရန် */
 }
         
 
@@ -266,7 +270,7 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
                 <i class="fa-solid fa-drumstick-bite"></i> မြင်သာကြက်ကင်
             </h2>
             <div>
-                <span class="halal-badge">✨ Halal | حلال</span>
+                <span class="halal-badge">حلال | Halal ✨</span>
             </div>
         </div>
         <button class="btn-history-top" onclick="viewOrderHistory()" style="margin-top: 4px;">
