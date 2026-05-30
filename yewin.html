@@ -30,44 +30,47 @@
 }
 body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: var(--text); font-size: 14px; }
 
-/* အဆင့်မြှင့်တင်ထားသော Top Nav UI (AliExpress Style) */
+/* --- ဒီနေရာမှစ၍ အစားထိုးပါ --- */
+/* အပေါ်ဆုံး ခေါင်းစီးပိုင်းကို အလွန်ကျစ်လျစ်ပြီး ပရီမီယံဖြစ်အောင် ပြုပြင်ခြင်း */
 .top-nav { 
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-    padding: 18px 14px; 
+    padding: 10px 14px 14px 14px; 
     position: sticky; 
     top: 0; 
     z-index: 100; 
     border-radius: 0 0 24px 24px; 
     box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15); 
+    text-align: center;
 }
 
-/* Branding Area Layout */
+/* ဗစ်စ်မိလ္လာဟ် စာတန်းဒီဇိုင်း */
+.bismillah-text {
+    font-family: 'Amiri', serif !important;
+    color: #fbbf24;
+    font-size: 15px;
+    margin: 0 0 4px 0;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
 .brand-area { 
-    position: relative; 
     display: flex; 
     justify-content: space-between; 
-    align-items: flex-start; 
-    padding: 0 2px 14px 2px; 
+    align-items: center; 
 }
 
-/* ဆိုင်အမည် စာသားဒီဇိုင်း အလှဆင်ခြင်း */
 .brand-title { 
-    font-size: 22px; 
+    font-size: 18px; 
     font-weight: 800; 
     margin: 0; 
     color: #ffffff; 
     display: flex; 
     align-items: center; 
-    gap: 10px;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    gap: 6px;
 }
-
-/* လခြမ်းပုံစံအိုင်ကွန်ကို 3D ပတ်ချာလည် လည်စေမည့် Animation အစစ် */
-.brand-title i {
+.brand-title i { 
     animation: moon3DSpin 3s infinite linear;
-    color: #fbbf24; /* ရွှေဝါရောင် လခြမ်း */
-    display: inline-block;
+    color: #fbbf24; 
 }
 
 @keyframes moon3DSpin {
@@ -75,102 +78,115 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
     100% { transform: rotateY(360deg); }
 }
 
+/* ဆိုင်လိပ်စာနှင့် ဖုန်းနံပါတ် စတိုင် */
+.shop-info-text {
+    font-size: 10px;
+    color: #cbd5e1;
+    margin: 3px 0 0 0;
+    text-align: left;
+    line-height: 1.4;
+    font-weight: normal;
+}
+
+/* ညာဘက်အခြမ်း အိုင်ကွန်ခလုတ်များ စုစည်းမှု */
+.nav-action-icons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
 /* ခေတ်မှီဆန်းသစ်သော Reem Kufi Font ပုံစံ ပြောင်းလဲခြင်း */
 .halal-badge {
     font-family: 'Reem Kufi', sans-serif !important; 
-    font-size: 13px; 
+    font-size: 11px; 
     font-weight: bold;
     color: #10b981; 
     background: rgba(16, 185, 129, 0.15);
-    padding: 3px 12px;
-    border-radius: 20px;
+    padding: 2px 8px;
+    border-radius: 6px;
     border: 1px solid rgba(16, 185, 129, 0.3);
-    margin-top: 5px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
 }
+
+/* ခလုတ်နှိပ်မှ ပွင့်လာမည့် Pop-up Modal စနစ်များ */
+.nav-popup {
+    display: none;
+    position: fixed;
+    top: 92px;
+    left: 10px;
+    right: 10px;
+    background: white;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 150;
+    animation: fadeInSlide 0.2s ease-out;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pop-up ထဲက Category ခလုတ်များ စတိုင် */
+.popup-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.popup-cat-btn {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1e293b;
+    text-align: center;
+    cursor: pointer;
+}
+.popup-cat-btn.active {
+    background: #1e293b;
+    color: white;
+    border-color: #1e293b;
+}
+
+/* Search Box Pop-up အတွက် */
+.popup-search-box {
+    display: flex;
+    align-items: center;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+.popup-search-box input {
+    border: none;
+    background: transparent;
+    padding: 6px;
+    margin-bottom: 0;
+    color: #1e293b;
+    width: 100%;
+    outline: none;
+}
+/* --- ဒီနေရာထိ ဖျက်ပြီး အစားထိုးပါ --- */
         
-        
-
-/* မှတ်တမ်းခလုတ်ကို ခေါင်းစီးနောက်ခံနှင့် လိုက်ဖက်အောင် အလှဆင်ခြင်း */
-.btn-history-top { 
-    background: rgba(255, 255, 255, 0.1); 
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    padding: 8px 14px; 
-    border-radius: 12px; 
-    font-size: 11px; 
-    font-weight: bold; 
-    color: #ffffff; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    gap: 6px; 
-    backdrop-filter: blur(4px);
-    transition: all 0.2s ease;
-}
-.btn-history-top:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-}
-
-/* Search Bar with Cross (X) Button UI */
-.search-container { position: relative; width: 100%; margin-bottom: 5px; }
-
-/* ခေါင်းစီးထဲက ပင်မ Search Box ကိုလည်း အရောင်လိုက်ညှိခြင်း */
-.search-box { 
-    background: rgba(255, 255, 255, 0.08); 
-    border-radius: 12px; 
-    padding: 2px 35px 2px 12px; 
-    display: flex; 
-    align-items: center; 
-    border: 1px solid rgba(255, 255, 255, 0.15); 
-    transition: all 0.3s ease;
-}
-.search-box:focus-within {
-    background: #ffffff;
-    border-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
-}
-.search-box input { 
-    border: none; 
-    background: transparent; 
-    padding: 8px; 
-    width: 100%; 
-    outline: none; 
-    font-size: 13px; 
-    color: #ffffff; /* စာရိုက်ရင် အဖြူရောင်ထွက်မည် */
-}
-.search-box input:focus {
-    color: #1e293b; /* Focus ဖြစ်ချိန် စာရိုက်ရင် အမည်းရောင်ပြောင်းမည် */
-}
-/* Focus ဖြစ်သွားရင် Search Icon အရောင်ပြောင်းရန် */
-.search-box:focus-within i {
-    color: #1e293b !important;
-}
-.btn-clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; display: none; padding: 5px; }
-
-/* Categories */
-.cat-row { display: flex; overflow-x: auto; gap: 6px; padding: 12px 0 2px; scrollbar-width: none; }
-.cat-row::-webkit-scrollbar { display: none; }
-.cat-btn { 
-    background: rgba(255, 255, 255, 0.06); 
-    border: 1px solid rgba(255, 255, 255, 0.12); 
-    padding: 6px 14px; 
-    border-radius: 10px; 
-    white-space: nowrap; 
-    font-size: 12px; 
-    font-weight: bold; 
-    color: #cbd5e1;
-    cursor: pointer; 
-    transition: all 0.2s ease;
-}
-.cat-btn.active { 
-    background: #ffffff; 
-    color: #0f172a; 
-    border-color: #ffffff; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
 
 /* Grid Cards */
 .container { padding: 10px; max-width: 500px; margin: auto; }
@@ -265,39 +281,58 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 </head>
 <body>
     <div class="top-nav">
-        <div class="brand-area" style="align-items: flex-start;">
-        <div style="display: flex; flex-direction: column;">
+    <div class="bismillah-text">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    
+    <div class="brand-area">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
             <h2 class="brand-title">
                 <i class="fa-solid fa-moon"></i> မြင်သာကြက်ကင်
             </h2>
-            <div>
-                <span class="halal-badge">حلال | Halal ✨</span>
-            </div>
-        </div>
-        <button class="btn-history-top" onclick="viewOrderHistory()" style="margin-top: 4px;">
-            <i class="fa-solid fa-clock-rotate-left"></i> မှတ်တမ်း
-        </button>
+            <p class="shop-info-text">
+                📍 မြင်သာ (၂) လမ်း၊ တောင်ဥက္ကလာပ<br>
+                📞 09-123456789, 09-987654321
+            </p>
         </div>
         
-    
-    <div class="search-container">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass" style="color:rgba(255,255,255,0.4); font-size: 13px;"></i>
-            <input type="text" id="searchInput" placeholder="ဟင်းပွဲအမည် ရိုက်ရှာပါ..." onkeyup="checkSearchInput()">
+        <div class="nav-action-icons">
+            <span class="halal-badge">حلال</span>
+            
+            <button class="icon-btn" onclick="togglePopup('searchPopup')" title="ဟင်းပွဲရှာရန်">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            
+            <button class="icon-btn" onclick="togglePopup('catPopup')" title="အမျိုးအစားများ">
+                <i class="fa-solid fa-layer-group"></i>
+            </button>
+            
+            <button class="icon-btn" onclick="viewOrderHistory()" title="အော်ဒါမှတ်တမ်း">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
         </div>
-        <button id="clearSearchBtn" class="btn-clear-search" style="color: rgba(255,255,255,0.5);" onclick="clearMenuSearch()"><i class="fa-solid fa-circle-xmark"></i></button>
     </div>
+</div>
 
-    <div class="cat-row">
-        <div class="cat-btn active" onclick="filterCat('All', this)">အားလုံး</div>
-        <div class="cat-btn" onclick="filterCat('အသား', this)">အသား</div>
-        <div class="cat-btn" onclick="filterCat('အရိုး', this)">အရိုး</div>
-        <div class="cat-btn" onclick="filterCat('ကလီစာ', this)">ကလီစာ</div>
-        <div class="cat-btn" onclick="filterCat('အသီးအရွက်', this)">အသီးအရွက်</div>
-        <div class="cat-btn" onclick="filterCat('အရေခွံ', this)">အရေခွံ</div>
-        <div class="cat-btn" onclick="filterCat('ဥ', this)">ဥ</div>
+<div id="searchPopup" class="nav-popup">
+    <div class="popup-search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color:#64748b; font-size: 13px;"></i>
+        <input type="text" id="searchInput" placeholder="ဟင်းပွဲအမည် ရိုက်ရှာပါ..." onkeyup="checkSearchInput()">
+        <button id="clearSearchBtn" class="btn-clear-search" style="position:static; transform:none; color:#94a3b8;" onclick="clearMenuSearch()"><i class="fa-solid fa-circle-xmark"></i></button>
     </div>
+</div>
+
+<div id="catPopup" class="nav-popup">
+    <div style="font-size:11px; font-weight:bold; color:#64748b; margin-bottom:8px; text-align:left;">🍽️ အမျိုးအစား ရွေးချယ်ရန်</div>
+    <div class="popup-cat-grid">
+        <div class="popup-cat-btn active" onclick="popupFilterCat('All', this)">အားလုံး</div>
+        <div class="popup-cat-btn" onclick="popupFilterCat('အသား', this)">အသား</div>
+        <div class="popup-cat-btn" onclick="popupFilterCat('အရိုး', this)">အရိုး</div>
+        <div class="popup-cat-btn" onclick="popupFilterCat('ကလီစာ', this)">ကလီစာ</div>
+        <div class="popup-cat-btn" onclick="popupFilterCat('အသီးအရွက်', this)">အသီးအရွက်</div>
+        <div class="popup-cat-btn" onclick="popupFilterCat('အရေခွံ', this)">အရေခွံ</div>
+        <div class="popup-cat-btn" onclick="popupFilterCat('ဥ', this)">ဥ</div>
     </div>
+</div>
+    
     
     
 
@@ -674,6 +709,51 @@ function closeImageViewer() {
     document.getElementById('imageViewerModal').style.display = 'none';
     document.getElementById('viewerImageTarget').src = ''; // Memory သက်သာစေရန် ပုံလမ်းကြောင်းကို ခေတ္တဖျက်ထားခြင်း
 }
+    // <script> အောက်တွင် ဤကုဒ်ကို ထည့်ပါ
+
+// Pop-up များ ပိတ်/ဖွင့် လုပ်မည့် စနစ်
+function togglePopup(popupId) {
+    const target = document.getElementById(popupId);
+    const allPopups = document.querySelectorAll('.nav-popup');
+    
+    allPopups.forEach(p => {
+        if(p.id !== popupId) p.style.display = 'none';
+    });
+    
+    if (target.style.display === 'block') {
+        target.style.display = 'none';
+    } else {
+        target.style.display = 'block';
+        if(popupId === 'searchPopup') {
+            setTimeout(() => document.getElementById('searchInput').focus(), 100);
+        }
+    }
+}
+
+// Pop-up ထဲက Category ခလုတ်များ နှိပ်လျှင် အလုပ်လုပ်မည့် စနစ်
+function popupFilterCat(catName, element) {
+    document.querySelectorAll('.popup-cat-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+    
+    // မူလရှိပြီးသား filterCat ခေါ်ခြင်း (သို့မဟုတ် activeCat ပြောင်းလဲခြင်း)
+    if (typeof filterCat === 'function') {
+        filterCat(catName, element);
+    } else {
+        activeCat = catName;
+        renderMenu();
+    }
+    
+    // နှိပ်ပြီးရင် category box ကို ပြန်ပိတ်ခြင်း
+    document.getElementById('catPopup').style.display = 'none';
+}
+
+// အပြင်နေရာလွတ်ကို နှိပ်လျှင် Pop-up များ ပြန်ပိတ်သွားစေရန်
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.top-nav') && !event.target.closest('.nav-popup')) {
+        document.querySelectorAll('.nav-popup').forEach(p => p.style.display = 'none');
+    }
+});
+    
     
 window.onload = renderMenu;
 
