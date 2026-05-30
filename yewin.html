@@ -32,113 +32,29 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
 
 /* --- ဒီနေရာမှစ၍ အစားထိုးပါ --- */
 /* အပေါ်ဆုံး ခေါင်းစီးပိုင်းကို အလွန်ကျစ်လျစ်ပြီး ပရီမီယံဖြစ်အောင် ပြုပြင်ခြင်း */
-.top-nav { 
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-    padding: 10px 14px 14px 14px; 
-    position: sticky; 
-    top: 0; 
-    z-index: 100; 
-    border-radius: 0 0 24px 24px; 
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15); 
-    text-align: center;
-}
+.top-nav {  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 10px 14px 14px 14px;  position: sticky;  top: 0;   z-index: 100;  border-radius: 0 0 24px 24px;  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15); text-align: center;}
 
 /* ဗစ်စ်မိလ္လာဟ် စာတန်းဒီဇိုင်း */
-.bismillah-text {
-    font-family: 'Amiri', serif !important;
-    color: #fbbf24;
-    font-size: 15px;
-    margin: 0 0 4px 0;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
+.bismillah-text { font-family: 'Amiri', serif !important;  color: #fbbf24; font-size: 15px;   margin: 0 0 4px 0;   font-weight: bold; letter-spacing: 0.5px;}
+.brand-area {  display: flex;   justify-content: space-between;  align-items: center; }
+.brand-title {  font-size: 18px;  font-weight: 800;  margin: 0;   color: #ffffff;  display: flex;   align-items: center;   gap: 6px;}
+.brand-title i {  animation: moon3DSpin 3s infinite linear; color: #fbbf24; }
 
-.brand-area { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-}
-
-.brand-title { 
-    font-size: 18px; 
-    font-weight: 800; 
-    margin: 0; 
-    color: #ffffff; 
-    display: flex; 
-    align-items: center; 
-    gap: 6px;
-}
-.brand-title i { 
-    animation: moon3DSpin 3s infinite linear;
-    color: #fbbf24; 
-}
-
-@keyframes moon3DSpin {
-    0% { transform: rotateY(0deg); }
-    100% { transform: rotateY(360deg); }
-}
+@keyframes moon3DSpin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
 
 /* ဆိုင်လိပ်စာနှင့် ဖုန်းနံပါတ် စတိုင် */
-.shop-info-text {
-    font-size: 10px;
-    color: #cbd5e1;
-    margin: 3px 0 0 0;
-    text-align: left;
-    line-height: 1.4;
-    font-weight: normal;
-}
+.shop-info-text { font-size: 10px; color: #cbd5e1; margin: 3px 0 0 0; text-align: left; line-height: 1.4; font-weight: normal;}
 
 /* ညာဘက်အခြမ်း အိုင်ကွန်ခလုတ်များ စုစည်းမှု */
-.nav-action-icons {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.icon-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-}
+.nav-action-icons { display: flex;  gap: 8px;   align-items: center; }
+.icon-btn {  background: rgba(255, 255, 255, 0.1);   border: 1px solid rgba(255, 255, 255, 0.15);  color: white;   width: 36px;  height: 36px;  border-radius: 10px;  display: flex; align-items: center; justify-content: center;  cursor: pointer;   font-size: 14px;  transition: all 0.2s; }
 .icon-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
 /* ခေတ်မှီဆန်းသစ်သော Reem Kufi Font ပုံစံ ပြောင်းလဲခြင်း */
-.halal-badge {
-    font-family: 'Reem Kufi', sans-serif !important; 
-    font-size: 11px; 
-    font-weight: bold;
-    color: #10b981; 
-    background: rgba(16, 185, 129, 0.15);
-    padding: 2px 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    display: inline-flex;
-    align-items: center;
-}
+.halal-badge {  font-family: 'Reem Kufi', sans-serif !important;   font-size: 11px;   font-weight: bold;   color: #10b981;    background: rgba(16, 185, 129, 0.15);   padding: 2px 8px;  border-radius: 6px;  border: 1px solid rgba(16, 185, 129, 0.3);  display: inline-flex;  align-items: center; }
 
 /* ခလုတ်နှိပ်မှ ပွင့်လာမည့် Pop-up Modal စနစ်များ */
-.nav-popup {
-    display: none;
-    position: fixed;
-    top: 92px;
-    left: 10px;
-    right: 10px;
-    background: white;
-    border-radius: 14px;
-    padding: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    z-index: 150;
-    animation: fadeInSlide 0.2s ease-out;
-}
+.nav-popup { display: none; position: fixed;  top: 92px; left: 10px;  right: 10px;  background: white;  border-radius: 14px; padding: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 150; animation: fadeInSlide 0.2s ease-out; }
 
 @keyframes fadeInSlide {
     from { opacity: 0; transform: translateY(-10px); }
@@ -146,45 +62,13 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
 }
 
 /* Pop-up ထဲက Category ခလုတ်များ စတိုင် */
-.popup-cat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-.popup-cat-btn {
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #1e293b;
-    text-align: center;
-    cursor: pointer;
-}
-.popup-cat-btn.active {
-    background: #1e293b;
-    color: white;
-    border-color: #1e293b;
-}
+.popup-cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.popup-cat-btn { background: #f1f5f9;  border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: bold; color: #1e293b; text-align: center;cursor: pointer; }
+.popup-cat-btn.active { background: #1e293b; color: white; border-color: #1e293b; }
 
 /* Search Box Pop-up အတွက် */
-.popup-search-box {
-    display: flex;
-    align-items: center;
-    background: #f1f5f9;
-    border-radius: 8px;
-    padding: 4px 10px;
-}
-.popup-search-box input {
-    border: none;
-    background: transparent;
-    padding: 6px;
-    margin-bottom: 0;
-    color: #1e293b;
-    width: 100%;
-    outline: none;
-}
+.popup-search-box {  display: flex; align-items: center;  background: #f1f5f9;  border-radius: 8px; padding: 4px 10px; }
+.popup-search-box input {  border: none; background: transparent;  padding: 6px;  margin-bottom: 0;color: #1e293b; width: 100%;  outline: none; }
 /* --- ဒီနေရာထိ ဖျက်ပြီး အစားထိုးပါ --- */
         
 
