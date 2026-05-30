@@ -13,7 +13,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🍗 မြင်သာကြက်ကင် POS</title>
     
-    <!-- Fonts ချိတ်ဆက်မှု (Google Fonts စနစ်တကျ စုစည်းထားခြင်း) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,700;1,700&family=Reem+Kufi:wght@700&family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
@@ -30,7 +29,6 @@
 }
 body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: var(--text); font-size: 14px; }
 
-/* --- ဒီနေရာမှစ၍ အစားထိုးပါ --- */
 /* အပေါ်ဆုံး ခေါင်းစီးပိုင်းကို အလွန်ကျစ်လျစ်ပြီး ပရီမီယံဖြစ်အောင် ပြုပြင်ခြင်း */
 .top-nav {  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 10px 14px 14px 14px;  position: sticky;  top: 0;   z-index: 100;  border-radius: 0 0 24px 24px;  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15); text-align: center;}
 
@@ -50,7 +48,7 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
 .icon-btn {  background: rgba(255, 255, 255, 0.1);   border: 1px solid rgba(255, 255, 255, 0.15);  color: white;   width: 36px;  height: 36px;  border-radius: 10px;  display: flex; align-items: center; justify-content: center;  cursor: pointer;   font-size: 14px;  transition: all 0.2s; }
 .icon-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* ခေတ်မှီဆန်းသစ်သော Reem Kufi Font ပုံစံ ပြောင်းလဲခြင်း */
+/* ခလုတ်နှိပ်မှ ပွင့်လာမည့် Pop-up Modal စနစ်များ */
 .halal-badge {  font-family: 'Reem Kufi', sans-serif !important;   font-size: 11px;   font-weight: bold;   color: #10b981;    background: rgba(16, 185, 129, 0.15);   padding: 2px 8px;  border-radius: 6px;  border: 1px solid rgba(16, 185, 129, 0.3);  display: inline-flex;  align-items: center; }
 
 /* ခလုတ်နှိပ်မှ ပွင့်လာမည့် Pop-up Modal စနစ်များ */
@@ -69,7 +67,6 @@ body { font-family: 'Pyidaungsu', sans-serif; background: var(--bg); margin: 0; 
 /* Search Box Pop-up အတွက် */
 .popup-search-box {  display: flex; align-items: center;  background: #f1f5f9;  border-radius: 8px; padding: 4px 10px; }
 .popup-search-box input {  border: none; background: transparent;  padding: 6px;  margin-bottom: 0;color: #1e293b; width: 100%;  outline: none; }
-/* --- ဒီနေရာထိ ဖျက်ပြီး အစားထိုးပါ --- */
         
 
 /* Grid Cards */
@@ -160,7 +157,6 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 .btn-close-viewer { position: absolute; top: -45px; right: 0; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .btn-close-viewer:hover { background: rgba(255,255,255,0.4); }
     
-        
     </style>
 </head>
 <body>
@@ -217,9 +213,6 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
     </div>
 </div>
     
-    
-    
-
 <div class="container">
     <div id="grid-box" class="menu-grid"></div>
 </div>
@@ -292,16 +285,16 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
     <button class="btn-main" onclick="closeAlert()">နားလည်ပါပြီ</button>
 </div>
 
-    <div id="imageViewerModal" class="img-viewer-overlay" onclick="closeImageViewer()">
-    <div class="img-viewer-box" onclick="event.stopPropagation()">
-        <button class="btn-close-viewer" onclick="closeImageViewer()"><i class="fa-solid fa-xmark"></i></button>
-        <img id="viewerImageTarget" src="" class="img-viewer-src" alt="Menu Large Image">
-        <div id="viewerImageTitle" class="img-viewer-title">ဟင်းပွဲအမည်</div>
-    </div>
-    </div>
+<div id="imageViewerModal" class="img-viewer-overlay" onclick="closeImageViewer()">
+<div class="img-viewer-box" onclick="event.stopPropagation()">
+    <button class="btn-close-viewer" onclick="closeImageViewer()"><i class="fa-solid fa-xmark"></i></button>
+    <img id="viewerImageTarget" src="" class="img-viewer-src" alt="Menu Large Image">
+    <div id="viewerImageTitle" class="img-viewer-title">ဟင်းပွဲအမည်</div>
+</div>
+</div>
     
 <script>
-       const BOT_TOKEN = "8215695761:AAF1qDjAJn7gjiHyzf8t7W6c8e51cim98sU";
+const BOT_TOKEN = "8215695761:AAF1qDjAJn7gjiHyzf8t7W6c8e51cim98sU";
 const CHAT_ID = "8116152317";
 
 const menuData = [
@@ -345,8 +338,6 @@ function renderMenu() {
             </div>
         </div>`).join('');
 }
-    
-    
 
 function checkSearchInput() {
     const q = document.getElementById('searchInput').value;
@@ -354,14 +345,12 @@ function checkSearchInput() {
     
     if (q.length > 0) {
         clearBtn.style.display = 'block';
-        // စာရိုက်ထားချိန်တွင် (X) ခလုတ်ကို အမည်းရောင်ပြောင်းရန်
         clearBtn.style.color = '#1e293b';
     } else {
         clearBtn.style.display = 'none';
     }
     renderMenu();
 }
-    
 
 function clearMenuSearch() {
     document.getElementById('searchInput').value = '';
@@ -498,7 +487,7 @@ function showReceipt(vCode, name, phone, date, time, tableRowsHtml, total, canva
 
     const receiptView = document.getElementById('receipt-view');
     receiptView.style.display = 'block';
-    receiptView.innerHTML = `<div style="text-align: center; color: #0f172a; margin: 15px 0;"><i class="fa-solid fa-circle-check" style="font-size: 40px;"></i><h4 style="margin: 8px 0 3px; font-size: 15px;">အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်!</h4><p style="font-size: 11px; color: var(--sub); margin: 0 10px; line-height:1.4;">ဘောက်ချာပုံရိပ်ကို Auto ဒေါင်းလုဒ်ရယူပေးထားပါသည်။</p></div><div class="receipt-card"><div class="receipt-header"><b>🍗 မြင်သာကြက်ကင်</b><span style="font-size:12px; color:#ef4444; margin-top:4px;">Voucher No: ${vCode}</span></div><div class="receipt-row"><span>ဝယ်သူအမည်:</span> <span>${name}</span></div><div class="receipt-row"><span>ဖုန်း/ID:</span> <span>${phone}</span></div><div class="receipt-row"><span>နေ့ရက်/အချိန်:</span> <span>${date} (${time})</span></div><div class="receipt-divider"></div><table class="v-table"><thead><tr><th>အမည်</th><th>ဈေးနှုန်း</th><th class="text-center">ခုရေ</th><th class="text-right">စုစုပေါင်း</th></tr></thead><tbody>${tableRowsHtml}</tbody></table><div class="receipt-divider"></div><div class="receipt-row receipt-total-text"><span>စုစုပေါင်းကျသင့်ငွေ:</span> <span>${total} Ks</span></div></div><button class="btn-main" style="margin-top: 20px; background: #1e293b;" onclick="location.reload()"><i class="fa-solid fa-house"></i> ပင်မစာမျက်နှာသို့ ပြန်သွားမည်</button>`;
+    receiptView.innerHTML = `<div style="text-align: center; color: #0f172a; margin: 15px 0;"><i class="fa-solid fa-circle-check" style="font-size: 40px;"></i><h4 style="margin: 8px 0 3px; font-size: 15px;">အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်!</h4><p style="font-size: 11px; color: var(--sub); margin: 0 10px; line-height:1.4;">ဘောက်ချာပုံရိပ်ကို Auto ဒေါင်းလုဒ်ရယူပေးထားပါသည်။</p></div><div class="receipt-card"><div class="receipt-header"><b>🍗 မြင်သာကြက်ကင်</b><span style="font-size:12px; color:#ef4444; margin-top:4px;">Voucher No: ${vCode}</span></div><div class="receipt-row"><span>ဝယ်သူအမည်:</span> <span>${name}</span></div><div class="receipt-row"><span>ဖုန်း/ID:</span> <span>${phone}</span></div><div class="receipt-row"><span>နေ့ရက်/အချိန်:</span> <span>${date} (${time})</span></div><div class="receipt-divider"></div><table class="v-table"><thead><tr><th>အမည်</th><th>ဈေးနှုန်း</th><th class="text-center">ခုရေ</th><th class="text-right">စုစုပေါင်း</th></tr></thead><tbody>${tableRowsHtml}</tbody></table><div class="receipt-divider"></div><div class="receipt-row receipt-total-text"><span>စုစုပေါင်းကျသင့်ငွေ:</span> <span>${total} Ks</span></div></div><button class="btn-main" style="margin-top: 20px; background: #1e293b;" onclick="location.reload()"><i class="fa-solid fa-house"></i> ပင်မစာမျက်နှာသို့ ပြန်သွားမည်</button`;
     setTimeout(() => { generateHDVoucher(vCode, name, phone, date, time, total, canvasItems); }, 600);
 }
 
@@ -574,28 +563,24 @@ function generateHDVoucher(vCode, name, phone, date, time, total, items) {
         currentY += 30;
     });
 
-    ctx.setLineDash([6, 4]); ctx.strokeStyle = '#0f172a'; ctx.beginPath(); ctx.moveTo(25, currentY - 10); ctx.lineTo(baseWidth - 25, currentY - 10); ctx.stroke(); ctx.setLineDash([]);
+     ctx.setLineDash([6, 4]); ctx.strokeStyle = '#0f172a'; ctx.beginPath(); ctx.moveTo(25, currentY - 10); ctx.lineTo(baseWidth - 25, currentY - 10); ctx.stroke(); ctx.setLineDash([]);
     currentY += 20; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'left'; ctx.fillStyle = '#0f172a'; ctx.fillText('စုစုပေါင်းကျသင့်ငွေ:', 30, currentY);
     ctx.textAlign = 'right'; ctx.fillStyle = '#ef4444'; ctx.font = 'bold 18px sans-serif'; ctx.fillText(`${total} Ks`, baseWidth - 30, currentY);
 
     try { const link = document.createElement('a'); link.download = `Voucher-${vCode}.png`; link.href = canvas.toDataURL('image/png'); link.click(); } catch (e) {}
 }
 
-    // ပုံကို အကြီးချဲ့ပြပေးမည့် စနစ်ဖွင့်ခြင်း
 function openImageViewer(imgUrl, itemName) {
     document.getElementById('viewerImageTarget').src = imgUrl;
     document.getElementById('viewerImageTitle').innerText = itemName;
     document.getElementById('imageViewerModal').style.display = 'flex';
 }
 
-// ပုံကြီးကြည့်ရှုရာမှ ပိတ်ပြီး ပင်မစာမျက်နှာသို့ ပြန်သွားခြင်း
 function closeImageViewer() {
     document.getElementById('imageViewerModal').style.display = 'none';
-    document.getElementById('viewerImageTarget').src = ''; // Memory သက်သာစေရန် ပုံလမ်းကြောင်းကို ခေတ္တဖျက်ထားခြင်း
+    document.getElementById('viewerImageTarget').src = '';
 }
-    // <script> အောက်တွင် ဤကုဒ်ကို ထည့်ပါ
 
-// Pop-up များ ပိတ်/ဖွင့် လုပ်မည့် စနစ်
 function togglePopup(popupId) {
     const target = document.getElementById(popupId);
     const allPopups = document.querySelectorAll('.nav-popup');
@@ -614,33 +599,26 @@ function togglePopup(popupId) {
     }
 }
 
-// Pop-up ထဲက Category ခလုတ်များ နှိပ်လျှင် အလုပ်လုပ်မည့် စနစ်
 function popupFilterCat(catName, element) {
     document.querySelectorAll('.popup-cat-btn').forEach(btn => btn.classList.remove('active'));
     element.classList.add('active');
     
-    // မူလရှိပြီးသား filterCat ခေါ်ခြင်း (သို့မဟုတ် activeCat ပြောင်းလဲခြင်း)
     if (typeof filterCat === 'function') {
         filterCat(catName, element);
     } else {
         activeCat = catName;
         renderMenu();
     }
-    
-    // နှိပ်ပြီးရင် category box ကို ပြန်ပိတ်ခြင်း
     document.getElementById('catPopup').style.display = 'none';
 }
 
-// အပြင်နေရာလွတ်ကို နှိပ်လျှင် Pop-up များ ပြန်ပိတ်သွားစေရန်
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.top-nav') && !event.target.closest('.nav-popup')) {
         document.querySelectorAll('.nav-popup').forEach(p => p.style.display = 'none');
     }
 });
     
-    
 window.onload = renderMenu;
-
-  </script>
-  </body>
-  </html>
+</script>
+</body>
+</html>
