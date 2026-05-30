@@ -162,35 +162,44 @@ input:focus { border-color: var(--accent); background: white; outline: none; }
 <body>
     <div class="top-nav">
     <div class="bismillah-text">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
-    
-    <div class="brand-area">
-        <div style="display: flex; flex-direction: column; gap: 2px;">
-            <h2 class="brand-title">
-                <i class="fa-solid fa-moon"></i> မြင်သာကြက်ကင်
-            </h2>
-            <p class="shop-info-text">
-                📍 မြင်သာ (၂) လမ်း၊ တောင်ဥက္ကလာပ<br>
-                📞 09-123456789, 09-987654321
-            </p>
-        </div>
+    <div class="brand-area" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="brand-title" style="margin: 0;">
+            <i class="fa-solid fa-moon"></i> မြင်သာကြက်ကင်
+        </h2>
         
-        <div class="nav-action-icons">
-            <span class="halal-badge">حلال</span>
-            
+        <div class="nav-action-icons" style="display: flex; gap: 6px; align-items: center;">
             <button class="icon-btn" onclick="togglePopup('searchPopup')" title="ဟင်းပွဲရှာရန်">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
-            
             <button class="icon-btn" onclick="togglePopup('catPopup')" title="အမျိုးအစားများ">
                 <i class="fa-solid fa-layer-group"></i>
             </button>
-            
             <button class="icon-btn" onclick="viewOrderHistory()" title="အော်ဒါမှတ်တမ်း">
                 <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
+            <button class="icon-btn" onclick="togglePopup('geoPopup')" title="ဆိုင်တည်နေရာ">
+                <i class="fa-solid fa-location-dot"></i>
+            </button>
+            <button class="icon-btn" onclick="togglePopup('phonePopup')" title="ဆက်သွယ်ရန်ဖုန်း">
+                <i class="fa-solid fa-phone"></i>
             </button>
         </div>
     </div>
 </div>
+
+<div id="geoPopup" class="nav-popup">
+    <div style="font-size: 13px; font-weight: bold; text-align: center; color: #1e293b;">
+        📍 သံသုမာလမ်းမ၊ မြင်သာဈေး၊ တောင်ဥက္ကလာပမြို့နယ်။
+    </div>
+</div>
+
+<div id="phonePopup" class="nav-popup">
+    <div style="font-size: 13px; font-weight: bold; text-align: center; color: #1e293b; line-height: 1.6;">
+        📞 ဆက်သွယ်ရန်ဖုန်းနံပါတ်များ:<br>
+        <a href="tel:09767287345" style="color: #fbbf24; text-decoration: none;">09-767287345</a>
+    </div>
+</div>
+    
 
 <div id="searchPopup" class="nav-popup">
     <div class="popup-search-box">
